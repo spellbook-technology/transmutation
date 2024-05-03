@@ -11,6 +11,7 @@ end
 require "undercover"
 
 require "transmutation"
+require "ostruct"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -21,5 +22,9 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  OpenStructSerializer = Class.new(Transmutation::Serializer) do # rubocop:disable Lint/ConstantDefinitionInBlock
+    attribute :first_name
   end
 end

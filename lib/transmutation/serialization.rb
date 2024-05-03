@@ -3,7 +3,7 @@
 module Transmutation
   module Serialization # rubocop:disable Style/Documentation
     def self.lookup_serializer(object)
-      "#{object.class}Serializer".constantize
+      Object.const_get("#{object.class}Serializer")
     end
 
     def render(**args)

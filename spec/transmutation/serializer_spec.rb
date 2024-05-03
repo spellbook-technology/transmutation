@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Transmutation::Serializer do
   let(:example_serializer) do
     Class.new(Transmutation::Serializer) do
@@ -6,7 +8,7 @@ RSpec.describe Transmutation::Serializer do
   end
 
   let(:example_object) do
-    Struct.new(:first_name, :last_name).new("John", "Doe")
+    OpenStruct.new(first_name: "John", last_name: "Doe")
   end
 
   subject { example_serializer.new(example_object) }
