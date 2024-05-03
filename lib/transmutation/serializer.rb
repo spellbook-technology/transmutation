@@ -3,9 +3,7 @@
 require "json"
 
 module Transmutation
-  class Base # rubocop:disable Style/Documentation
-    @@attributes = {} # rubocop:disable Style/ClassVars
-
+  class Serializer # rubocop:disable Style/Documentation
     def initialize(object)
       @object = object
     end
@@ -15,13 +13,13 @@ module Transmutation
     end
 
     def as_json(options = {})
-      @@attributes.each_with_object({}) do |(attr_name, attr_options), hash|
-        hash[attr_name] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
+      _attributes.each_with_object({}) do |(attr_name, attr_options), hash|
+        hash[attr_name.to_s] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
       end
     end
 
     def self.attribute(attr_name, &block)
-      @@attributes[attr_name] = {
+      _attributes[attr_name] = {
         block:
       }
     end
@@ -30,6 +28,14 @@ module Transmutation
       attr_name.each do |name|
         attribute(name)
       end
+    end
+
+    def self._attributes
+      @@attributes ||= {}
+    end
+
+    def _attributes
+      self.class._attributes
     end
 
     private
