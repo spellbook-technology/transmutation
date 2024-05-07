@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::Serialization do # rubocop:disable Metrics/BlockLength
+  before do
+    open_struct_serializer_class = Class.new(Transmutation::Serializer) do
+      attribute :first_name
+    end
+
+    stub_const("OpenStructSerializer", open_struct_serializer_class)
+  end
+
   let(:dummy_class) do
     Class.new do
       def render(**args)

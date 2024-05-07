@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::CollectionSerializer do
+  before do
+    open_struct_serializer_class = Class.new(Transmutation::Serializer) do
+      attribute :first_name
+    end
+
+    stub_const("OpenStructSerializer", open_struct_serializer_class)
+  end
+
   let(:example_object) do
     OpenStruct.new(first_name: "John", last_name: "Doe")
   end

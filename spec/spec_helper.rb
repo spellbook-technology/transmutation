@@ -23,8 +23,4 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
-
-  OpenStructSerializer = Class.new(Transmutation::Serializer) do # rubocop:disable Lint/ConstantDefinitionInBlock
-    attribute :first_name
-  end
 end
