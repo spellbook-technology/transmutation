@@ -12,7 +12,7 @@ module Transmutation
       as_json(options).to_json
     end
 
-    def as_json(options = {})
+    def as_json(_options = {})
       _attributes.each_with_object({}) do |(attr_name, attr_options), hash|
         hash[attr_name.to_s] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
       end
@@ -31,7 +31,7 @@ module Transmutation
     end
 
     def self._attributes
-      @@attributes ||= {}
+      @@attributes ||= {} # rubocop:disable Style/ClassVars
     end
 
     def _attributes
