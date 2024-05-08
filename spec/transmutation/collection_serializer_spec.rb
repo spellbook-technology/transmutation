@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::CollectionSerializer do
+  subject(:array) { described_class.new(example_array) }
+
   before do
     open_struct_serializer_class = Class.new(Transmutation::Serializer) do
       attribute :first_name
@@ -17,11 +19,9 @@ RSpec.describe Transmutation::CollectionSerializer do
     [example_object]
   end
 
-  subject { Transmutation::CollectionSerializer.new(example_array) }
-
   describe "#as_json" do
-    it "serializes the collection of objects" do
-      json = subject.as_json
+    it "serializes the collection of objects" do # rubocop:disable RSpec/ExampleLength,RSpec/MultipleExpectations
+      json = array.as_json
 
       expect(json).to be_an(Array)
       expect(json.length).to eq(1)
