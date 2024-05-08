@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Transmutation::Serialization do # rubocop:disable Metrics/BlockLength
+RSpec.describe Transmutation::Serialization do
+  subject(:controller) { example_class.new }
+
   before do
     open_struct_serializer_class = Class.new(Transmutation::Serializer) do
       attribute :first_name
@@ -30,24 +32,22 @@ RSpec.describe Transmutation::Serialization do # rubocop:disable Metrics/BlockLe
     OpenStruct.new(first_name: "John", last_name: "Doe")
   end
 
-  subject { example_class.new }
-
   describe "#render" do
     it "calls super when :json is not provided" do
-      expect(subject.render(html: example_object.to_h)).to eq({ html: { first_name: "John",
-                                                                        last_name: "Doe" } })
+      expect(controller.render(html: example_object.to_h)).to eq({ html: { first_name: "John",
+                                                                           last_name: "Doe" } })
     end
 
-    it "calls super when :serialize is false" do
-      json = subject.render(json: example_object.to_h, serialize: false)
+    it "calls super when :serialize is false" do # rubocop:disable RSpec/MultipleExpectations
+      json = controller.render(json: example_object.to_h, serialize: false)
       expect(json.keys).to contain_exactly(:first_name, :last_name)
       expect(json[:first_name]).to eq("John")
       expect(json[:last_name]).to eq("Doe")
     end
 
-    it "calls super with Transmutation::CollectionSerializer when :json responds to :map" do
+    it "calls super with Transmutation::CollectionSerializer when :json responds to :map" do # rubocop:disable RSpec/ExampleLength,RSpec/MultipleExpectations
       example_array = [example_object]
-      json = subject.render(json: example_array)
+      json = controller.render(json: example_array)
 
       expect(json).to be_an(Array)
       expect(json.length).to eq(1)
@@ -59,7 +59,7 @@ RSpec.describe Transmutation::Serialization do # rubocop:disable Metrics/BlockLe
     end
 
     it "calls super with the serializer for :json when :json does not respond to :map" do
-      expect(subject.render(json: example_object)).to eq({ "first_name" => "John" })
+      expect(controller.render(json: example_object)).to eq({ "first_name" => "John" })
     end
   end
 end
