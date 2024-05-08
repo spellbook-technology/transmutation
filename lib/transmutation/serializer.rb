@@ -19,9 +19,7 @@ module Transmutation
     end
 
     def self.attribute(attr_name, &block)
-      _attributes[attr_name] = {
-        block:
-      }
+      _attributes[attr_name] = { block: block }
     end
 
     def self.attributes(*attr_name)
