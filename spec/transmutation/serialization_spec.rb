@@ -59,14 +59,33 @@ RSpec.describe Transmutation::Serialization do
       expect(json).to be_an(Array)
       expect(json.length).to eq(1)
 
-      serialized_object = json.first
-      expect(serialized_object).to be_a(Hash)
-      expect(serialized_object.keys).to contain_exactly("first_name")
-      expect(serialized_object).to eq({ "first_name" => "John" })
+      it "returns an array with serialized objects" do
+        expect(json.first).to be_a(Hash)
+      end
+
+      it "returns an array with serialized objects with keys defined" do
+        expect(json.first.keys).to contain_exactly("first_name")
+      end
+
+      it "returns a serialized array" do
+        expect(json.first).to eq({ "first_name" => "John" })
+      end
     end
 
     it "calls super with the serializer for :json when :json does not respond to :map" do
       expect(controller.render(json: example_object)).to eq({ "first_name" => "John" })
+    end
+  end
+
+  describe "#lookup_serializer" do
+    it "returns the serializer class for a given object" do
+      serializer_class = described_class.lookup_serializer(example_object)
+      expect(serializer_class).to eq(ExampleObjectSerializer)
+    end
+
+    it "raises an error if the serializer class is not found" do
+      object = Struct.new(:first_name, :last_name).new("John", "Doe")
+      expect { described_class.lookup_serializer(object) }.to raise_error(NameError)
     end
   end
 end
