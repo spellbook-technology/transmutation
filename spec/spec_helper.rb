@@ -3,7 +3,8 @@
 require "simplecov"
 require "simplecov-lcov"
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
-SimpleCov.formatter = SimpleCov::Formatter::LcovFormatter
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([SimpleCov::Formatter::HTMLFormatter,
+                                                                SimpleCov::Formatter::LcovFormatter])
 SimpleCov.start do
   add_filter(%r{^/spec/})
 end
@@ -11,7 +12,7 @@ end
 require "undercover"
 
 require "transmutation"
-require "ostruct"
+require "example_object"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
