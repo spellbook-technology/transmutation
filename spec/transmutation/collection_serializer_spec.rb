@@ -31,16 +31,45 @@ RSpec.describe Transmutation::CollectionSerializer do
   end
 
   describe "#as_json" do
-    it "serializes the collection of objects" do # rubocop:disable RSpec/ExampleLength,RSpec/MultipleExpectations
-      json = array.as_json
+    subject(:json) { array.as_json }
 
+    it "returns an array" do
       expect(json).to be_an(Array)
-      expect(json.length).to eq(1)
+    end
 
-      serialized_object = json.first
-      expect(serialized_object).to be_a(Hash)
-      expect(serialized_object.keys).to contain_exactly("first_name")
-      expect(serialized_object).to eq({ "first_name" => "John" })
+    it "returns an array with serialized objects" do
+      expect(json.first).to be_a(Hash)
+    end
+
+    it "returns an array with serialized objects with keys defined" do
+      expect(json.first.keys).to contain_exactly("first_name")
+    end
+
+    it "returns a serialized array" do
+      expect(json.first).to eq({ "first_name" => "John" })
+    end
+
+    describe "calls the appropriate serializer for each object" do
+      let(:serializer) { instance_double(ExampleObjectSerializer) }
+
+      before do
+        allow(Transmutation::Serialization).to receive(:lookup_serializer).with(example_object).and_return(serializer)
+        allow(serializer).to receive(:new).with(example_object).and_return(serializer)
+        allow(serializer).to receive(:as_json).with({}).and_return({ "first_name" => "John" })
+        array.as_json
+      end
+
+      it "calls lookup_serializer on each object" do
+        expect(Transmutation::Serialization).to have_received(:lookup_serializer).with(example_object)
+      end
+
+      it "initialize appropriate serializer on each object" do
+        expect(serializer).to have_received(:new).with(example_object)
+      end
+
+      it "calls as_json from the appropriate serializer on each object" do
+        expect(serializer).to have_received(:as_json).with({})
+      end
     end
   end
 end
