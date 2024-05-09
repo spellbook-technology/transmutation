@@ -4,11 +4,11 @@ RSpec.describe Transmutation::Serialization do
   subject(:controller) { example_class.new }
 
   before do
-    open_struct_serializer_class = Class.new(Transmutation::Serializer) do
+    example_object_serializer_class = Class.new(Transmutation::Serializer) do
       attribute :first_name
     end
 
-    stub_const("OpenStructSerializer", open_struct_serializer_class)
+    stub_const("ExampleObjectSerializer", example_object_serializer_class)
   end
 
   let(:dummy_class) do
@@ -29,7 +29,7 @@ RSpec.describe Transmutation::Serialization do
   end
 
   let(:example_object) do
-    OpenStruct.new(first_name: "John", last_name: "Doe")
+    ExampleObject.new(first_name: "John", last_name: "Doe")
   end
 
   describe "#render" do

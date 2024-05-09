@@ -4,15 +4,15 @@ RSpec.describe Transmutation::CollectionSerializer do
   subject(:array) { described_class.new(example_array) }
 
   before do
-    open_struct_serializer_class = Class.new(Transmutation::Serializer) do
+    example_object_serializer_class = Class.new(Transmutation::Serializer) do
       attribute :first_name
     end
 
-    stub_const("OpenStructSerializer", open_struct_serializer_class)
+    stub_const("ExampleObjectSerializer", example_object_serializer_class)
   end
 
   let(:example_object) do
-    OpenStruct.new(first_name: "John", last_name: "Doe")
+    ExampleObject.new(first_name: "John", last_name: "Doe")
   end
 
   let(:example_array) do
