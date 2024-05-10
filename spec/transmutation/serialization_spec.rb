@@ -156,8 +156,20 @@ RSpec.describe Transmutation::Serialization do
   end
 
   describe "#serialize" do
+    before do
+      test_example_object_serializer_class = Class.new(Transmutation::Serializer) do
+        attribute :first_name
+      end
+
+      stub_const("Test::ExampleObjectSerializer", test_example_object_serializer_class)
+    end
+
     it "returns the wrapped object in corresponding serializer" do
       expect(described_class.serialize(example_object).class).to eq(ExampleObjectSerializer)
+    end
+
+    it "returns the wrapped object in corresponding serializer with namespace" do
+      expect(described_class.serialize(example_object, namespace: "Test").class).to eq(Test::ExampleObjectSerializer)
     end
   end
 end

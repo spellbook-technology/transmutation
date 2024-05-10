@@ -24,8 +24,8 @@ module Transmutation
       Object.const_get("#{parent_module}::#{namespace}::#{object_class}Serializer")
     end
 
-    def self.serialize(object)
-      lookup_serializer!(object).new(object)
+    def self.serialize(object, namespace: "")
+      lookup_serializer!(object, namespace: namespace).new(object)
     end
 
     def render(**args)
