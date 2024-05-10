@@ -80,9 +80,61 @@ RSpec.describe Transmutation::Serialization do
   end
 
   describe "#lookup_serializer" do
-    it "returns the serializer class for a given object" do
-      serializer_class = described_class.lookup_serializer(example_object)
-      expect(serializer_class).to eq(ExampleObjectSerializer)
+    context "when namespace is empty" do
+      it "returns the serializer class for a given object" do
+        serializer_class = described_class.lookup_serializer(example_object)
+        expect(serializer_class).to eq(ExampleObjectSerializer)
+      end
+    end
+
+    context "when namespace is not empty" do
+      before do
+        test_example_object_serializer_class = Class.new(Transmutation::Serializer) do
+          attribute :first_name
+        end
+
+        stub_const("Test::ExampleObjectSerializer", test_example_object_serializer_class)
+
+        test_user_example_object_serializer_class = Class.new(Transmutation::Serializer) do
+          attribute :first_name
+        end
+
+        stub_const("Test::User::ExampleObjectSerializer", test_user_example_object_serializer_class)
+
+        user_example_object_serializer_class = Class.new(Transmutation::Serializer) do
+          attribute :first_name
+        end
+
+        stub_const("User::ExampleObjectSerializer", user_example_object_serializer_class)
+
+        test_example_object_class = Class.new do
+          attr_accessor :first_name, :last_name
+
+          def initialize(first_name:, last_name:)
+            @first_name = first_name
+            @last_name = last_name
+          end
+        end
+
+        stub_const("Test::ExampleObject", test_example_object_class)
+      end
+
+      let(:test_example_object) { Test::ExampleObject.new(first_name: "John", last_name: "Doe") }
+
+      it "returns the serializer class for a given object with namespace" do
+        serializer_class = described_class.lookup_serializer(example_object, namespace: "Test")
+        expect(serializer_class).to eq(Test::ExampleObjectSerializer)
+      end
+
+      it "returns the serializer class for a given object with namespace and parent module" do
+        serializer_class = described_class.lookup_serializer(test_example_object, namespace: "User")
+        expect(serializer_class).to eq(Test::User::ExampleObjectSerializer)
+      end
+
+      it "returns the serializer class for a given object with fully override namespace" do
+        serializer_class = described_class.lookup_serializer(test_example_object, namespace: "::User")
+        expect(serializer_class).to eq(User::ExampleObjectSerializer)
+      end
     end
 
     it "returns nil when the serializer class is not found" do
