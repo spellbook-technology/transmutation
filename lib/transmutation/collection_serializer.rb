@@ -8,7 +8,7 @@ module Transmutation
 
     def as_json(options = {})
       objects.map do |object|
-        Transmutation::Serialization.lookup_serializer(object).new(object).as_json(options)
+        Transmutation::Serialization.serialize(object, options)
       end
     end
 
