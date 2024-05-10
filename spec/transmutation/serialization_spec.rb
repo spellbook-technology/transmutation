@@ -88,4 +88,11 @@ RSpec.describe Transmutation::Serialization do
       expect { described_class.lookup_serializer(object) }.to raise_error(NameError)
     end
   end
+
+  describe "#serialize" do
+    it "returns the serialized object as JSON" do
+      json = described_class.serialize(example_object)
+      expect(json).to eq({ "first_name" => "John" })
+    end
+  end
 end
