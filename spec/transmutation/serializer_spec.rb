@@ -3,6 +3,19 @@
 RSpec.describe Transmutation::Serializer do
   subject(:json) { example_serializer.new(example_object) }
 
+  before do
+    example_object_class = Class.new do
+      attr_accessor :first_name, :last_name
+
+      def initialize(first_name:, last_name:)
+        @first_name = first_name
+        @last_name = last_name
+      end
+    end
+
+    stub_const("ExampleObject", example_object_class)
+  end
+
   let(:example_serializer) do
     Class.new(Transmutation::Serializer) do
       attributes :first_name

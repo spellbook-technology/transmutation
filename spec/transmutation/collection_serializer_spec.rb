@@ -9,6 +9,17 @@ RSpec.describe Transmutation::CollectionSerializer do
     end
 
     stub_const("ExampleObjectSerializer", example_object_serializer_class)
+
+    example_object_class = Class.new do
+      attr_accessor :first_name, :last_name
+
+      def initialize(first_name:, last_name:)
+        @first_name = first_name
+        @last_name = last_name
+      end
+    end
+
+    stub_const("ExampleObject", example_object_class)
   end
 
   let(:example_object) do
