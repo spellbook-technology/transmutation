@@ -17,10 +17,6 @@ RSpec.describe Transmutation::Serialization do
         @first_name = first_name
         @last_name = last_name
       end
-
-      def to_h
-        { first_name: first_name, last_name: last_name }
-      end
     end
 
     stub_const("ExampleObject", example_object_class)
@@ -49,15 +45,11 @@ RSpec.describe Transmutation::Serialization do
 
   describe "#render" do
     it "calls super when :json is not provided" do
-      expect(controller.render(html: example_object.to_h)).to eq({ html: { first_name: "John",
-                                                                           last_name: "Doe" } })
+      expect(controller.render(html: example_object)).to eq({ html: example_object })
     end
 
-    it "calls super when :serialize is false" do # rubocop:disable RSpec/MultipleExpectations
-      json = controller.render(json: example_object.to_h, serialize: false)
-      expect(json.keys).to contain_exactly(:first_name, :last_name)
-      expect(json[:first_name]).to eq("John")
-      expect(json[:last_name]).to eq("Doe")
+    it "calls super when :serialize is false" do
+      expect(controller.render(json: example_object, serialize: false)).to eq(example_object)
     end
 
     it "calls super with Transmutation::CollectionSerializer when :json responds to :map" do # rubocop:disable RSpec/ExampleLength,RSpec/MultipleExpectations
