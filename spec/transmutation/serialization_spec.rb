@@ -90,9 +90,8 @@ RSpec.describe Transmutation::Serialization do
   end
 
   describe "#serialize" do
-    it "returns the serialized object as JSON" do
-      json = described_class.serialize(example_object)
-      expect(json).to eq({ "first_name" => "John" })
+    it "returns the wrapped object in corresponding serializer" do
+      expect(described_class.serialize(example_object).class).to eq(ExampleObjectSerializer)
     end
   end
 end

@@ -6,8 +6,8 @@ module Transmutation
       Object.const_get("::#{object.class}Serializer")
     end
 
-    def self.serialize(object, options = {})
-      lookup_serializer(object).new(object).as_json(options)
+    def self.serialize(object)
+      lookup_serializer(object).new(object)
     end
 
     def render(**args)
