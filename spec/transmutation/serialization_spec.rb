@@ -9,6 +9,21 @@ RSpec.describe Transmutation::Serialization do
     end
 
     stub_const("ExampleObjectSerializer", example_object_serializer_class)
+
+    example_object_class = Class.new do
+      attr_accessor :first_name, :last_name
+
+      def initialize(first_name:, last_name:)
+        @first_name = first_name
+        @last_name = last_name
+      end
+
+      def to_h
+        { first_name: first_name, last_name: last_name }
+      end
+    end
+
+    stub_const("ExampleObject", example_object_class)
   end
 
   let(:dummy_class) do

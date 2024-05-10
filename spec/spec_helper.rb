@@ -12,7 +12,6 @@ end
 require "undercover"
 
 require "transmutation"
-require "example_object"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
