@@ -83,9 +83,21 @@ RSpec.describe Transmutation::Serialization do
       expect(serializer_class).to eq(ExampleObjectSerializer)
     end
 
-    it "raises an error if the serializer class is not found" do
+    it "returns nil when the serializer class is not found" do
       object = Struct.new(:first_name, :last_name).new("John", "Doe")
-      expect { described_class.lookup_serializer(object) }.to raise_error(NameError)
+      expect(described_class.lookup_serializer(object)).to eq(nil)
+    end
+  end
+
+  describe "#lookup_serializer!" do
+    it "returns the serializer class for a given object" do
+      serializer_class = described_class.lookup_serializer!(example_object)
+      expect(serializer_class).to eq(ExampleObjectSerializer)
+    end
+
+    it "raises an error when the serializer class is not found" do
+      object = Struct.new(:first_name, :last_name).new("John", "Doe")
+      expect { described_class.lookup_serializer!(object) }.to raise_error(NameError)
     end
   end
 
