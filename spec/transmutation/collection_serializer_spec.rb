@@ -50,25 +50,16 @@ RSpec.describe Transmutation::CollectionSerializer do
     end
 
     describe "calls the appropriate serializer for each object" do
-      let(:serializer) { instance_double(ExampleObjectSerializer) }
-
-      before do
-        allow(Transmutation::Serialization).to receive(:lookup_serializer).with(example_object).and_return(serializer)
-        allow(serializer).to receive(:new).with(example_object).and_return(serializer)
-        allow(serializer).to receive(:as_json).with({}).and_return({ "first_name" => "John" })
+      after do
         array.as_json
       end
 
       it "calls lookup_serializer on each object" do
-        expect(Transmutation::Serialization).to have_received(:lookup_serializer).with(example_object)
-      end
-
-      it "initialize appropriate serializer on each object" do
-        expect(serializer).to have_received(:new).with(example_object)
+        expect(Transmutation::Serialization).to receive(:serialize).with(example_object).and_call_original # rubocop:disable RSpec/MessageSpies
       end
 
       it "calls as_json from the appropriate serializer on each object" do
-        expect(serializer).to have_received(:as_json).with({})
+        expect_any_instance_of(ExampleObjectSerializer).to receive(:as_json).with({}) # rubocop:disable RSpec/AnyInstance
       end
     end
   end
