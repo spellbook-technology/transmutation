@@ -5,7 +5,7 @@ require_relative "utils"
 module Transmutation
   module Serialization # rubocop:disable Style/Documentation
     def self.lookup_serializer(object, namespace: "")
-      lookup_serializer!(object, namespace)
+      lookup_serializer!(object, namespace: namespace)
     rescue NameError
       nil
     end
