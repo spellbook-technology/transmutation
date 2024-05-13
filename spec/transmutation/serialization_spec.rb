@@ -52,12 +52,14 @@ RSpec.describe Transmutation::Serialization do
       expect(controller.render(json: example_object, serialize: false)).to eq(example_object)
     end
 
-    it "calls super with Transmutation::CollectionSerializer when :json responds to :map" do # rubocop:disable RSpec/ExampleLength,RSpec/MultipleExpectations
-      example_array = [example_object]
-      json = controller.render(json: example_array)
+    describe "calls super with Transmutation::CollectionSerializer when :json responds to :map" do
+      subject(:json) { controller.render(json: example_array) }
 
-      expect(json).to be_an(Array)
-      expect(json.length).to eq(1)
+      let(:example_array) { [example_object] }
+
+      it "returns an array" do
+        expect(json).to be_an(Array)
+      end
 
       it "returns an array with serialized objects" do
         expect(json.first).to be_a(Hash)
