@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::CollectionSerializer do
-  subject(:array) { described_class.new(example_array) }
+  subject(:array) { described_class.new(example_array, example_controller) }
 
   before do
     example_object_serializer_class = Class.new(Transmutation::Serializer) do
@@ -20,15 +20,25 @@ RSpec.describe Transmutation::CollectionSerializer do
     end
 
     stub_const("ExampleObject", example_object_class)
+
+    example_controller_class = Class.new do
+      include Transmutation::Serialization
+
+      def serialize(object, **kwargs)
+        self.class.serialize(object, **kwargs)
+      end
+    end
+
+    stub_const("ExampleController", example_controller_class)
   end
 
   let(:example_object) do
     ExampleObject.new(first_name: "John", last_name: "Doe")
   end
 
-  let(:example_array) do
-    [example_object]
-  end
+  let(:example_array) { [example_object] }
+
+  let(:example_controller) { ExampleController.new }
 
   describe "#as_json" do
     subject(:json) { array.as_json }

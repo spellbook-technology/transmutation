@@ -2,18 +2,19 @@
 
 module Transmutation
   class CollectionSerializer # rubocop:disable Style/Documentation
-    def initialize(objects)
+    def initialize(objects, caller_class)
       @objects = objects
+      @caller_class = caller_class
     end
 
     def as_json(options = {})
       objects.map do |object|
-        Transmutation::Serialization.serialize(object).as_json(options)
+        @caller_class.serialize(object).as_json(options)
       end
     end
 
     private
 
-    attr_reader :objects
+    attr_reader :objects, :caller_class
   end
 end
