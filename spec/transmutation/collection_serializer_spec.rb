@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::CollectionSerializer do
-  subject(:array) { described_class.new(example_array, example_controller) }
+  subject(:array) { described_class.new(example_array) }
 
   before do
     example_object_serializer_class = Class.new(Transmutation::Serializer) do
