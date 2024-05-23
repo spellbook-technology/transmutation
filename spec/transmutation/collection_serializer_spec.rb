@@ -64,8 +64,8 @@ RSpec.describe Transmutation::CollectionSerializer do
         array.as_json
       end
 
-      it "calls lookup_serializer on each object" do
-        expect(Transmutation::Serialization).to receive(:serialize).with(example_object).and_call_original # rubocop:disable RSpec/MessageSpies
+      it "calls serialize to receive the appropriate serializer" do
+        expect(array).to receive(:serialize).with([example_object], namespace: "").and_call_original # rubocop:disable RSpec/SubjectStub,RSpec/MessageSpies
       end
 
       it "calls as_json from the appropriate serializer on each object" do
