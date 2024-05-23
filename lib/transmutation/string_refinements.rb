@@ -6,11 +6,11 @@ module Transmutation
 
     refine String do
       def camelcase
-        return up unless match? DELIMITERS
+        return capitalize unless match? DELIMITERS
 
-        split(%r{\s*-\s*|\s*/\s*|\s*:+\s*}).then { |parts| combine parts, :up, "::" }
+        split(%r{\s*-\s*|\s*/\s*|\s*:+\s*}).then { |parts| combine parts, :capitalize, "::" }
                                            .then { |text| text.split(/\s*_\s*|\s+/) }
-                                           .then { |parts| combine parts, :up }
+                                           .then { |parts| combine parts, :capitalize }
       end
 
       def first(maximum = 0)
@@ -21,7 +21,7 @@ module Transmutation
         self[..(maximum - 1)]
       end
 
-      def up = empty? ? self : first.upcase + self[1, size]
+      def capitalize = empty? ? self : first.upcase + self[1, size]
 
       private
 
