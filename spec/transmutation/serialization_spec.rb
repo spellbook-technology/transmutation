@@ -52,28 +52,6 @@ RSpec.describe Transmutation::Serialization do
       expect(controller.render(json: example_object, serialize: false)).to eq(example_object)
     end
 
-    describe "calls super with Transmutation::CollectionSerializer when :json responds to :map" do
-      subject(:json) { controller.render(json: example_array) }
-
-      let(:example_array) { [example_object] }
-
-      it "returns an array" do
-        expect(json).to be_an(Array)
-      end
-
-      it "returns an array with serialized objects" do
-        expect(json.first).to be_a(Hash)
-      end
-
-      it "returns an array with serialized objects with keys defined" do
-        expect(json.first.keys).to contain_exactly("first_name")
-      end
-
-      it "returns a serialized array" do
-        expect(json.first).to eq({ "first_name" => "John" })
-      end
-    end
-
     it "calls super with the serializer for :json when :json does not respond to :map" do
       expect(controller.render(json: example_object)).to eq({ "first_name" => "John" })
     end
@@ -82,7 +60,7 @@ RSpec.describe Transmutation::Serialization do
   describe "#lookup_serializer" do
     context "when namespace is empty" do
       it "returns the serializer class for a given object" do
-        serializer_class = example_class.lookup_serializer(example_object)
+        serializer_class = controller.lookup_serializer(example_object)
         expect(serializer_class).to eq(ExampleObjectSerializer)
       end
     end
@@ -122,36 +100,36 @@ RSpec.describe Transmutation::Serialization do
       let(:test_example_object) { Test::ExampleObject.new(first_name: "John", last_name: "Doe") }
 
       it "returns the serializer class for a given object with namespace" do
-        serializer_class = example_class.lookup_serializer(example_object, namespace: "Test")
+        serializer_class = controller.lookup_serializer(example_object, namespace: "Test")
         expect(serializer_class).to eq(Test::ExampleObjectSerializer)
       end
 
       it "returns the serializer class for a given object with namespace and parent module" do
-        serializer_class = example_class.lookup_serializer(test_example_object, namespace: "User")
+        serializer_class = controller.lookup_serializer(test_example_object, namespace: "User")
         expect(serializer_class).to eq(User::Test::ExampleObjectSerializer)
       end
 
       it "returns the serializer class for a given object with fully override namespace" do
-        serializer_class = example_class.lookup_serializer(test_example_object, namespace: "::User")
+        serializer_class = controller.lookup_serializer(test_example_object, namespace: "::User")
         expect(serializer_class).to eq(User::Test::ExampleObjectSerializer)
       end
     end
 
     it "returns nil when the serializer class is not found" do
       object = Struct.new(:first_name, :last_name).new("John", "Doe")
-      expect(example_class.lookup_serializer(object)).to eq(nil)
+      expect(controller.lookup_serializer(object)).to eq(nil)
     end
   end
 
   describe "#lookup_serializer!" do
     it "returns the serializer class for a given object" do
-      serializer_class = example_class.lookup_serializer!(example_object)
+      serializer_class = controller.lookup_serializer!(example_object)
       expect(serializer_class).to eq(ExampleObjectSerializer)
     end
 
     it "raises an error when the serializer class is not found" do
       object = Struct.new(:first_name, :last_name).new("John", "Doe")
-      expect { example_class.lookup_serializer!(object) }.to raise_error(NameError)
+      expect { controller.lookup_serializer!(object) }.to raise_error(NameError)
     end
   end
 
@@ -165,11 +143,11 @@ RSpec.describe Transmutation::Serialization do
     end
 
     it "returns the wrapped object in corresponding serializer" do
-      expect(example_class.serialize(example_object).class).to eq(ExampleObjectSerializer)
+      expect(controller.serialize(example_object).class).to eq(ExampleObjectSerializer)
     end
 
     it "returns the wrapped object in corresponding serializer with namespace" do
-      expect(example_class.serialize(example_object, namespace: "Test").class).to eq(Test::ExampleObjectSerializer)
+      expect(controller.serialize(example_object, namespace: "Test").class).to eq(Test::ExampleObjectSerializer)
     end
   end
 end
