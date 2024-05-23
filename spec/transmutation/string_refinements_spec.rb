@@ -123,13 +123,13 @@ RSpec.describe Transmutation::StringRefinements do
     end
   end
 
-  describe "#up" do
+  describe "#capitalize" do
     it "answers empty string as empty string" do
-      expect("".up).to eq("")
+      expect("".capitalize).to eq("")
     end
 
     it "upcases first letter only" do
-      expect("test".up).to eq("Test")
+      expect("test".capitalize).to eq("Test")
     end
   end
 end
