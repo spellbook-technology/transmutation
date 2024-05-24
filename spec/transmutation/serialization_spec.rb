@@ -57,8 +57,13 @@ RSpec.describe Transmutation::Serialization do
     end
   end
 
-  describe "#lookup_serializer" do
-    context "when namespace is empty" do
+  describe "#lookup_serializer!" do
+    it "returns the serializer class for a given object" do
+      serializer_class = controller.lookup_serializer!(example_object)
+      expect(serializer_class).to eq(ExampleObjectSerializer)
+    end
+
+    context "when namespace is empty and variant is nil" do
       it "returns the serializer class for a given object" do
         serializer_class = controller.lookup_serializer(example_object)
         expect(serializer_class).to eq(ExampleObjectSerializer)
@@ -115,21 +120,51 @@ RSpec.describe Transmutation::Serialization do
       end
     end
 
-    it "returns nil when the serializer class is not found" do
-      object = Struct.new(:first_name, :last_name).new("John", "Doe")
-      expect(controller.lookup_serializer(object)).to eq(nil)
-    end
-  end
+    context "when variant is not nil" do
+      before do
+        test_object_serializer_class = Class.new(Transmutation::Serializer) do
+          attribute :first_name
+        end
 
-  describe "#lookup_serializer!" do
-    it "returns the serializer class for a given object" do
-      serializer_class = controller.lookup_serializer!(example_object)
-      expect(serializer_class).to eq(ExampleObjectSerializer)
+        stub_const("TestObjectSerializer", test_object_serializer_class)
+      end
+
+      it "returns the serializer class for a given object with variant" do
+        serializer_class = controller.lookup_serializer(example_object, variant: :test_object)
+        expect(serializer_class).to eq(TestObjectSerializer)
+      end
+    end
+
+    context "when namespace is not empty and variant is not nil" do
+      before do
+        user_test_object_serializer_class = Class.new(Transmutation::Serializer) do
+          attribute :first_name
+        end
+
+        stub_const("User::TestObjectSerializer", user_test_object_serializer_class)
+      end
+
+      it "returns the serializer class for a given object with namespace and variant supported" do
+        serializer_class = controller.lookup_serializer(example_object, namespace: "User", variant: :test_object)
+        expect(serializer_class).to eq(User::TestObjectSerializer)
+      end
     end
 
     it "raises an error when the serializer class is not found" do
       object = Struct.new(:first_name, :last_name).new("John", "Doe")
       expect { controller.lookup_serializer!(object) }.to raise_error(NameError)
+    end
+  end
+
+  describe "#lookup_serializer" do
+    it "returns the serializer class for a given object" do
+      serializer_class = controller.lookup_serializer(example_object)
+      expect(serializer_class).to eq(ExampleObjectSerializer)
+    end
+
+    it "returns nil when the serializer class is not found" do
+      object = Struct.new(:first_name, :last_name).new("John", "Doe")
+      expect(controller.lookup_serializer(object)).to eq(nil)
     end
   end
 
