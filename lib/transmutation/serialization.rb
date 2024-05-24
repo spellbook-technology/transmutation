@@ -11,8 +11,8 @@ module Transmutation # rubocop:disable Style/Documentation
       end
     end
 
-    def lookup_serializer(object, namespace: "")
-      lookup_serializer!(object, namespace: namespace)
+    def lookup_serializer(object, namespace: "", variant: nil)
+      lookup_serializer!(object, namespace: namespace, variant: variant)
     rescue NameError
       nil
     end
@@ -24,27 +24,32 @@ module Transmutation # rubocop:disable Style/Documentation
       super(**args, json: serialize(args[:json]))
     end
 
-    def lookup_serializer!(object, namespace: "")
+    def lookup_serializer!(object, namespace: "", variant: nil)
       caller_namespace = get_caller_namespace(self.class)
 
+      object_class = variant.nil? ? object.class : variant.to_s.camelcase
+
       begin
-        return Object.const_get("#{caller_namespace}::#{object.class}Serializer") if namespace.empty?
+        return Object.const_get("#{caller_namespace}::#{object_class}Serializer") if namespace.empty?
       rescue NameError
-        return Object.const_get("::#{object.class}Serializer")
+        return Object.const_get("::#{object_class}Serializer")
       end
 
       converted_namespace = namespace.to_s.camelcase
 
-      return Object.const_get("#{converted_namespace}::#{object.class}Serializer") if namespace.to_s.include?("::")
+      return Object.const_get("#{converted_namespace}::#{object_class}Serializer") if namespace.to_s.include?("::")
 
-      Object.const_get("#{caller_namespace}::#{converted_namespace}::#{object.class}Serializer")
+      Object.const_get("#{caller_namespace}::#{converted_namespace}::#{object_class}Serializer")
     end
 
-    def serialize(object, namespace: "")
-      return lookup_serializer!(object, namespace: namespace).new(object) unless object.respond_to?(:map)
+    def serialize(object, namespace: "", variant: nil)
+      unless object.respond_to?(:map)
+        return lookup_serializer!(object, namespace: namespace,
+                                          variant: variant).new(object)
+      end
 
       object.map do |entry_object|
-        lookup_serializer!(entry_object, namespace: namespace).new(entry_object)
+        lookup_serializer!(entry_object, namespace: namespace, variant: variant).new(entry_object)
       end
     end
 
