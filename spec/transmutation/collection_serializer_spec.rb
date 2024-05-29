@@ -20,16 +20,6 @@ RSpec.describe Transmutation::CollectionSerializer do
     end
 
     stub_const("ExampleObject", example_object_class)
-
-    example_controller_class = Class.new do
-      include Transmutation::Serialization
-
-      def serialize(object, **kwargs)
-        self.class.serialize(object, **kwargs)
-      end
-    end
-
-    stub_const("ExampleController", example_controller_class)
   end
 
   let(:example_object) do
@@ -37,8 +27,6 @@ RSpec.describe Transmutation::CollectionSerializer do
   end
 
   let(:example_array) { [example_object] }
-
-  let(:example_controller) { ExampleController.new }
 
   describe "#as_json" do
     subject(:json) { array.as_json }
@@ -65,11 +53,11 @@ RSpec.describe Transmutation::CollectionSerializer do
       end
 
       it "calls serialize to receive the appropriate serializer" do
-        expect(array).to receive(:serialize).with([example_object], namespace: "", variant: nil).and_call_original # rubocop:disable RSpec/SubjectStub,RSpec/MessageSpies
+        expect(array).to receive(:serialize).with(example_array, namespace: "", serializer: nil).and_call_original # rubocop:disable RSpec/SubjectStub,RSpec/MessageSpies
       end
 
       it "calls as_json from the appropriate serializer on each object" do
-        expect_any_instance_of(ExampleObjectSerializer).to receive(:as_json).with({}) # rubocop:disable RSpec/AnyInstance
+        expect_any_instance_of(Transmutation::Serializer).to receive(:as_json).with({}) # rubocop:disable RSpec/AnyInstance
       end
     end
   end
