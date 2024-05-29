@@ -4,14 +4,14 @@ module Transmutation
   class CollectionSerializer # rubocop:disable Style/Documentation
     include Transmutation::Serialization
 
-    def initialize(objects, namespace: "", variant: nil)
+    def initialize(objects, namespace: "", serializer: nil)
       @objects = objects
       @namespace = namespace
-      @variant = variant
+      @serializer = serializer
     end
 
     def as_json(options = {})
-      serializers = serialize(objects, namespace: namespace, variant: variant)
+      serializers = serialize(objects, namespace: namespace, serializer: serializer)
 
       serializers.map do |serializer|
         serializer.as_json(options)
@@ -20,6 +20,6 @@ module Transmutation
 
     private
 
-    attr_reader :objects, :namespace, :variant
+    attr_reader :objects, :namespace, :serializer
   end
 end
