@@ -5,8 +5,8 @@ require_relative "lib/transmutation/version"
 Gem::Specification.new do |spec|
   spec.name = "transmutation"
   spec.version = Transmutation::VERSION
-  spec.authors = ["nitemaeric", "borrabeer"]
-  spec.email = ["daniel@spellbook.tech", "worapath.pakkavesa@spellbook.tech"]
+  spec.authors = %w[nitemaeric borrabeer]
+  spec.email = %w[daniel@spellbook.tech worapath.pakkavesa@spellbook.tech]
 
   spec.summary = "Ruby JSON serialization library"
   spec.homepage = "https://github.com/spellbook-technology/transmutation"
