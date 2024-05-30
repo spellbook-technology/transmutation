@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "json"
-
 module Transmutation
   class Serializer # rubocop:disable Style/Documentation
     def initialize(object)
