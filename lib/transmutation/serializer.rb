@@ -2,6 +2,8 @@
 
 module Transmutation
   class Serializer # rubocop:disable Style/Documentation
+    extend ClassAttributes
+
     def initialize(object)
       @object = object
     end
@@ -11,13 +13,13 @@ module Transmutation
     end
 
     def as_json(_options = {})
-      _attributes.each_with_object({}) do |(attr_name, attr_options), hash|
+      attributes_config.each_with_object({}) do |(attr_name, attr_options), hash|
         hash[attr_name.to_s] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
       end
     end
 
     def self.attribute(attr_name, &block)
-      _attributes[attr_name] = { block: block }
+      attributes_config[attr_name] = { block: block }
     end
 
     def self.attributes(*attr_name)
@@ -26,16 +28,15 @@ module Transmutation
       end
     end
 
-    def self._attributes
-      @@attributes ||= {} # rubocop:disable Style/ClassVars
-    end
-
-    def _attributes
-      self.class._attributes
-    end
-
     private
 
+    class_attribute :attributes_config, instance_writer: false, default: {}
+
     attr_reader :object
+
+    private_class_method def self.inherited(subclass)
+      super
+      subclass.attributes_config = attributes_config.dup
+    end
   end
 end
