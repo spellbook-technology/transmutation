@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
+require "pry"
 require "simplecov"
 require "simplecov-lcov"
+require "undercover"
+
 SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([SimpleCov::Formatter::HTMLFormatter,
                                                                 SimpleCov::Formatter::LcovFormatter])
 SimpleCov.start do
   add_filter(%r{^/spec/})
 end
-
-require "undercover"
 
 require "transmutation"
 

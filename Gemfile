@@ -15,3 +15,5 @@ gem "rubocop-rspec", require: false
 gem "simplecov"
 gem "simplecov-lcov"
 gem "undercover"
+
+gem "pry"
