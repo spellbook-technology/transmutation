@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Transmutation
-  module StringRefinements # rubocop:disable Style/Documentation
+  module StringRefinements
     DELIMITERS = %r{[a-z][A-Z]|\s*-\s*|\s*/\s*|\s*:+\s*|\s*_\s*|\s+}
 
     refine String do

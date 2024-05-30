@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module Transmutation # rubocop:disable Style/Documentation
+module Transmutation
   using Transmutation::StringRefinements
 
-  module Serialization # rubocop:disable Style/Documentation
+  module Serialization
     def self.included(base)
       caller_class = (base.instance_of?(Class) ? base.to_s : self.class.to_s)
       caller_namespace = caller_class.include?("::") ? caller_class.split("::").first : ""

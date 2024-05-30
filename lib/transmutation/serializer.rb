@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Transmutation
-  class Serializer # rubocop:disable Style/Documentation
+  class Serializer
     extend ClassAttributes
 
     def initialize(object)

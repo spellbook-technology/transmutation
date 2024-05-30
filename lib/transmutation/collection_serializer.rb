@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Transmutation
-  class CollectionSerializer # rubocop:disable Style/Documentation
+  class CollectionSerializer
     include Transmutation::Serialization
 
     def initialize(objects, namespace: "", serializer: nil)
