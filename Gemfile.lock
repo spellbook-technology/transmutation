@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    transmutation (0.2.2)
+    transmutation (0.2.3)
       zeitwerk (~> 2.6.15)
 
 GEM
