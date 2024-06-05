@@ -88,7 +88,57 @@ If bundler is not being used to manage dependencies, install the gem by executin
     ```
   </details>
 
-### Using the `Transmutation::Serialization` module
+### With Ruby on Rails
+
+Transmutation packages a `Transmutation::Serialization` module to be included in your Rails controllers to add serialization to your `render` calls.
+
+```ruby
+class Api::V1::UsersController < ApplicationController
+  include Transmutation::Serialization
+
+  def show
+    user = User.find(params[:id])
+
+    render json: user
+  end
+end
+```
+
+This will attempt to bubble up the controller namespaces to find a defined serializer class:
+
+- `Api::V1::UserSerializer`
+- `Api::UserSerializer`
+- `UserSerializer`
+
+If no serializer class is found, it will fall back to the default behavior of rendering the object as JSON.
+
+### Configurations
+
+You can override the serialization lookup by passing the following options:
+
+- `namespace`: The namespace to use when looking up the serializer class.
+
+  ```ruby
+  render json: user, namespace: "V1" # => Api::V1::V1::UserSerializer
+  ```
+
+  To prevent caller namespaces from being appended to the provided namespace, prefix the namespace with `::`.
+
+  ```ruby
+  render json: user, namespace: "::V1" # => V1::UserSerializer
+  ```
+
+- `serializer`: The serializer class to use.
+
+  ```ruby
+  render json: user, serializer: "SuperUserSerializer" # => Api::V1::SuperUserSerializer
+  ```
+
+  To prevent all namespaces from being appended to the serializer class, prefix the serializer class with `::`.
+
+  ```ruby
+  render json: user, serializer: "::SuperUserSerializer" # => SuperUserSerializer
+  ```
 
 ## Development
 
