@@ -48,11 +48,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
   As long as your object responds to the attributes defined in the serializer, it can be serialized.
 
-  - Struct
+  <details>
+    <summary>- Struct</summary>
 
     ```ruby
     User = Struct.new(:id, :name, :email)
     ```
+  </details>
 
   - Class
 
