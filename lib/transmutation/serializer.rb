@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module Transmutation
+  # Base class for your serializers.
+  #
+  # @example Basic usage
+  #   class UserSerializer < Transmutation::Serializer
+  #     attributes :first_name, :last_name
+  #
+  #     attribute :full_name do
+  #       "#{object.first_name} #{object.last_name}".strip
+  #     end
+  #   end
   class Serializer
     extend ClassAttributes
 
@@ -18,13 +28,35 @@ module Transmutation
       end
     end
 
-    def self.attribute(attr_name, &block)
-      attributes_config[attr_name] = { block: block }
+    # Define an attribute to be serialized
+    #
+    # @param attribute_name [Symbol] The name of the attribute to serialize
+    # @param block [Proc] The block to call to get the value of the attribute.
+    #   The block is called in the context of the serializer instance.
+    #
+    # @example
+    #   class UserSerializer < Transmutation::Serializer
+    #     attribute :first_name
+    #
+    #     attribute :full_name do
+    #       "#{object.first_name} #{object.last_name}".strip
+    #     end
+    #   end
+    def self.attribute(attribute_name, &block)
+      attributes_config[attribute_name] = { block: block }
     end
 
-    def self.attributes(*attr_name)
-      attr_name.each do |name|
-        attribute(name)
+    # Shorthand for defining multiple attributes
+    #
+    # @param attribute_names [Array<Symbol>] The names of the attributes to serialize
+    #
+    # @example
+    #   class UserSerializer < Transmutation::Serializer
+    #     attributes :first_name, :last_name
+    #   end
+    def self.attributes(*attribute_names)
+      attribute_names.each do |attr_name|
+        attribute(attr_name)
       end
     end
 
