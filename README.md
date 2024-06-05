@@ -49,14 +49,15 @@ If bundler is not being used to manage dependencies, install the gem by executin
   As long as your object responds to the attributes defined in the serializer, it can be serialized.
 
   <details>
-    <summary>- Struct</summary>
+    <summary>Struct</summary>
 
     ```ruby
     User = Struct.new(:id, :name, :email)
     ```
   </details>
 
-  - Class
+  <details>
+    <summary>Class</summary>
 
     ```ruby
     class User
@@ -69,8 +70,10 @@ If bundler is not being used to manage dependencies, install the gem by executin
       end
     end
     ```
+  </details>
 
-  - ActiveRecord
+  <details>
+    <summary>ActiveRecord</summary>
 
     ```ruby
     # == Schema Information
@@ -83,6 +86,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
     class User < ApplicationRecord
     end
     ```
+  </details>
 
 ### Using the `Transmutation::Serialization` module
 
