@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Transmutation::CollectionSerializer do
-  subject(:array) { described_class.new(example_array) }
+  subject(:collection_serializer) { described_class.new(example_array) }
 
   before do
     example_object_serializer_class = Class.new(Transmutation::Serializer) do
@@ -29,7 +29,7 @@ RSpec.describe Transmutation::CollectionSerializer do
   let(:example_array) { [example_object] }
 
   describe "#as_json" do
-    subject(:json) { array.as_json }
+    subject(:json) { collection_serializer.as_json }
 
     it "returns an array" do
       expect(json).to be_an(Array)
@@ -44,21 +44,15 @@ RSpec.describe Transmutation::CollectionSerializer do
     end
 
     it "returns a serialized array" do
-      expect(json.first).to eq({ "first_name" => "John" })
+      expect(json).to eq([{ "first_name" => "John" }])
     end
+  end
 
-    describe "calls the appropriate serializer for each object" do
-      after do
-        array.as_json
-      end
+  describe "#to_json" do
+    subject(:json) { collection_serializer.to_json }
 
-      it "calls serialize to receive the appropriate serializer" do
-        expect(array).to receive(:serialize).with(example_array, namespace: "", serializer: nil).and_call_original # rubocop:disable RSpec/SubjectStub,RSpec/MessageSpies
-      end
-
-      it "calls as_json from the appropriate serializer on each object" do
-        expect_any_instance_of(Transmutation::Serializer).to receive(:as_json).with({}) # rubocop:disable RSpec/AnyInstance
-      end
+    it "returns a string" do
+      expect(json).to be_a(String)
     end
   end
 end

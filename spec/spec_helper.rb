@@ -13,6 +13,7 @@ SimpleCov.start do
 end
 
 require "transmutation"
+require "support/markdown_helper"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
