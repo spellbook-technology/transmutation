@@ -12,3 +12,6 @@
 
 # Build artifacts
 *.gem
+
+# MacOS
+.DS_Store
