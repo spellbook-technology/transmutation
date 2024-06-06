@@ -12,9 +12,9 @@ module Transmutation
       # Bubbles up the namespace until we find a matching serializer.
       #
       # @see Transmutation::Serialization#lookup_serializer
+      # @note This never bubbles up the object's namespace, only the caller's namespace.
       #
-      # Example:
-      #
+      # @example
       #   namespace: Api::V1::Admin::Detailed
       #   serializer: Chat::User
       #
@@ -25,8 +25,6 @@ module Transmutation
       #   - Api::V1::Chat::UserSerializer
       #   - Api::Chat::UserSerializer
       #   - Chat::UserSerializer
-      #
-      #   Note: This never bubbles up the object's namespace, only the caller's namespace.
       def serializer_for(object, serializer: nil)
         return Transmutation::CollectionSerializer if object.respond_to?(:map)
 
