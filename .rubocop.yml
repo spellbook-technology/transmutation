@@ -16,4 +16,8 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
+Metrics/ParameterLists:
+  Enabled: true
+  CountKeywordArgs: false
+
 require: rubocop-rspec
