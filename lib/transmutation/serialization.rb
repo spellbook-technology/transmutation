@@ -29,7 +29,7 @@ module Transmutation
     end
 
     private_class_method def self.included(base)
-      base.include(Rendering) if base.respond_to?(:render)
+      base.include(Rendering) if base.method_defined?(:render)
     end
   end
 end
