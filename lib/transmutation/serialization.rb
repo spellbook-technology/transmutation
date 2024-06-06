@@ -8,14 +8,18 @@ module Transmutation
     # @param object [Object] The object to serialize.
     # @param namespace [String, Symbol, Module] The namespace to lookup the serializer in.
     # @param serializer [String, Symbol, Class] The serializer to use.
+    # @param max_depth [Integer] The maximum depth of nested associations to serialize.
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
-    def serialize(object, namespace: nil, serializer: nil)
+    def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: 1)
       if object.respond_to?(:map)
-        return object.map { |item| serialize(item, namespace: namespace, serializer: serializer) }
+        return object.map do |item|
+          serialize(item, namespace: namespace, serializer: serializer, depth: depth, max_depth: max_depth)
+        end
       end
 
-      lookup_serializer(object, namespace: namespace, serializer: serializer).new(object)
+      lookup_serializer(object, namespace: namespace, serializer: serializer)
+        .new(object, depth: depth, max_depth: max_depth)
     end
 
     # Lookup the serializer for the given object.

@@ -27,7 +27,11 @@ RSpec.describe "Rendering" do
           "id" => 1,
           "first_name" => "John",
           "last_name" => "Doe",
-          "full_name" => "John Doe"
+          "full_name" => "John Doe",
+          "posts" => [
+            { "id" => 1, "title" => "First post" },
+            { "id" => 3, "title" => "Second post!?" }
+          ]
         }
       end
 
@@ -59,7 +63,8 @@ RSpec.describe "Rendering" do
         {
           "id" => 1,
           "title" => "First post",
-          "body" => "First!"
+          "body" => "First!",
+          "user" => { "id" => 1, "first_name" => "John", "last_name" => "Doe", "full_name" => "John Doe" }
         }
       end
 
