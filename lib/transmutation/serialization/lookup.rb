@@ -26,8 +26,6 @@ module Transmutation
       #   - Api::Chat::UserSerializer
       #   - Chat::UserSerializer
       def serializer_for(object, serializer: nil)
-        return Transmutation::CollectionSerializer if object.respond_to?(:map)
-
         serializer_name = serializer_name_for(object, serializer: serializer)
 
         return constantize_serializer!(Object, serializer_name, object: object) if serializer_name.start_with?("::")
@@ -45,8 +43,6 @@ module Transmutation
       #
       # @return [String] The serializer name.
       def serializer_name_for(object, serializer: nil)
-        return "::Transmutation::CollectionSerializer" if object.respond_to?(:map)
-
         "#{serializer&.delete_suffix("Serializer") || object.class.name}Serializer"
       end
 

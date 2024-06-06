@@ -11,6 +11,10 @@ module Transmutation
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
     def serialize(object, namespace: nil, serializer: nil)
+      if object.respond_to?(:map)
+        return object.map { |item| serialize(item, namespace: namespace, serializer: serializer) }
+      end
+
       lookup_serializer(object, namespace: namespace, serializer: serializer).new(object)
     end
 
