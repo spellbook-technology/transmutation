@@ -73,4 +73,25 @@ RSpec.describe "Rendering" do
       end
     end
   end
+
+  describe "Api::V1::ProductsController" do
+    subject(:controller) { Api::V1::ProductsController.new }
+
+    describe "#show" do
+      let(:expected_json) do
+        {
+          "id" => 1,
+          "name" => "Shoes",
+          "price" => {
+            "subunit" => 1000,
+            "currency" => "GBP"
+          }
+        }
+      end
+
+      it "returns a product serialized with the ProductSerializer" do
+        expect(controller.show(1)).to eq(expected_json)
+      end
+    end
+  end
 end

@@ -52,13 +52,15 @@ module Transmutation
         @potential_namespaces ||= begin
           namespace_parts = serializer_namespace.split("::")
 
-          namespace_parts.filter_map.with_index do |part, index|
+          namespaces = namespace_parts.filter_map.with_index do |part, index|
             namespace = [*namespace_parts[...index], part].join("::")
 
             next if namespace.empty?
 
             Object.const_get(namespace) if Object.const_defined?(namespace)
-          end.reverse
+          end
+
+          [*namespaces.reverse, Object]
         end
       end
 
