@@ -30,10 +30,10 @@ module Transmutation
       as_json(options).to_json
     end
 
-    def as_json(_options = {})
+    def as_json(options = {})
       attributes_config.each_with_object({}) do |(attr_name, attr_options), hash|
         if attr_options[:association]
-          hash[attr_name.to_s] = instance_exec(&attr_options[:block]) if @depth + 1 <= @max_depth
+          hash[attr_name.to_s] = instance_exec(&attr_options[:block]).as_json(options) if @depth + 1 <= @max_depth
         else
           hash[attr_name.to_s] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
         end
@@ -74,7 +74,7 @@ module Transmutation
       #   end
       def association(association_name, namespace: nil, serializer: nil)
         block = lambda do
-          serialize(object.send(association_name), namespace: namespace, serializer: serializer, depth: @depth + 1)
+          serialize(object.send(association_name), namespace: namespace, serializer: serializer, depth: @depth + 1, max_depth: @max_depth)
         end
 
         attributes_config[association_name] = { block: block, association: true }
