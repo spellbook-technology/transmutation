@@ -46,5 +46,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: Release gem
         uses: rubygems/release-gem@v1
