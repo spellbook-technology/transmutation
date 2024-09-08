@@ -74,7 +74,13 @@ module Transmutation
       #   end
       def association(association_name, namespace: nil, serializer: nil)
         block = lambda do
-          serialize(object.send(association_name), namespace: namespace, serializer: serializer, depth: @depth + 1, max_depth: @max_depth)
+          serialize(
+            object.send(association_name),
+            namespace: namespace,
+            serializer: serializer,
+            depth: @depth + 1,
+            max_depth: @max_depth
+          )
         end
 
         attributes_config[association_name] = { block: block, association: true }

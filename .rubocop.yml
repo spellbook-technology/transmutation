@@ -16,6 +16,9 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
+Metrics/AbcSize:
+  Max: 18
+
 Metrics/ParameterLists:
   Enabled: true
   CountKeywordArgs: false

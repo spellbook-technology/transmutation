@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 unless Array.method_defined?(:as_json)
-  class Array
-    def as_json(options = nil) # :nodoc:
+  class Array # :nodoc:
+    def as_json(options = {})
       if options
         map { |v| v.as_json(options.dup) }
       else
-        map { |v| v.as_json }
+        map(&:as_json)
       end
     end
   end
