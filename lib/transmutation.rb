@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "transmutation/core_ext/array"
+
 require "zeitwerk"
 loader = Zeitwerk::Loader.for_gem
 loader.setup
