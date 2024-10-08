@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-require "transmutation/core_ext/array"
-
-require "zeitwerk"
-loader = Zeitwerk::Loader.for_gem
-loader.setup
-
 # A performant and expressive solution for serializing Ruby objects into JSON, with a touch of opinionated "magic" ✨.
 #
 # @example Basic usage
@@ -46,3 +40,10 @@ loader.setup
 module Transmutation
   class Error < StandardError; end
 end
+
+require "zeitwerk"
+loader = Zeitwerk::Loader.for_gem(warn_on_extra_files: false)
+loader.ignore("#{__dir__}/transmutation/core_ext")
+loader.setup
+
+require "transmutation/core_ext/array"
