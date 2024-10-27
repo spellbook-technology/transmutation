@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    transmutation (0.3.6)
+    transmutation (0.4.0)
       activesupport (~> 7.2)
       zeitwerk (~> 2.6.15)
 
