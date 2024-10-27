@@ -13,12 +13,12 @@ module Transmutation
     def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: 1)
       if object.respond_to?(:map) && !object.respond_to?(:to_hash)
         return object.map do |item|
-          serialize(item, namespace: namespace, serializer: serializer, depth: depth, max_depth: max_depth)
+          serialize(item, namespace:, serializer:, depth:, max_depth:)
         end
       end
 
-      lookup_serializer(object, namespace: namespace, serializer: serializer)
-        .new(object, depth: depth, max_depth: max_depth)
+      lookup_serializer(object, namespace:, serializer:)
+        .new(object, depth:, max_depth:)
     end
 
     # Lookup the serializer for the given object.
@@ -32,7 +32,7 @@ module Transmutation
     # @return [Class<Transmutation::Serializer>] The serializer for the given object.
     #
     def lookup_serializer(object, namespace: nil, serializer: nil)
-      Lookup.new(self, namespace: namespace).serializer_for(object, serializer: serializer)
+      Lookup.new(self, namespace:).serializer_for(object, serializer:)
     end
 
     private_class_method def self.included(base)

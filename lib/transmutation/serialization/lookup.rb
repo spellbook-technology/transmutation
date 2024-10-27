@@ -26,9 +26,9 @@ module Transmutation
       #   - Api::Chat::UserSerializer
       #   - Chat::UserSerializer
       def serializer_for(object, serializer: nil)
-        serializer_name = serializer_name_for(object, serializer: serializer)
+        serializer_name = serializer_name_for(object, serializer:)
 
-        return constantize_serializer!(Object, serializer_name, object: object) if serializer_name.start_with?("::")
+        return constantize_serializer!(Object, serializer_name, object:) if serializer_name.start_with?("::")
 
         potential_namespaces.each do |potential_namespace|
           return potential_namespace.const_get(serializer_name) if potential_namespace.const_defined?(serializer_name)
@@ -76,7 +76,7 @@ module Transmutation
       end
 
       def constantize_serializer!(namespace, name, object:)
-        raise SerializerNotFound.new(object, namespace: namespace, name: name) unless namespace.const_defined?(name)
+        raise SerializerNotFound.new(object, namespace:, name:) unless namespace.const_defined?(name)
 
         namespace.const_get(name)
       end

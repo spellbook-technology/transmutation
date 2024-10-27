@@ -56,7 +56,7 @@ module Transmutation
       #     end
       #   end
       def attribute(attribute_name, &block)
-        attributes_config[attribute_name] = { block: block }
+        attributes_config[attribute_name] = { block: }
       end
 
       # Define an association to be serialized
@@ -76,14 +76,14 @@ module Transmutation
         block = lambda do
           serialize(
             object.send(association_name),
-            namespace: namespace,
-            serializer: serializer,
+            namespace:,
+            serializer:,
             depth: @depth + 1,
             max_depth: @max_depth
           )
         end
 
-        attributes_config[association_name] = { block: block, association: true }
+        attributes_config[association_name] = { block:, association: true }
       end
 
       alias belongs_to association

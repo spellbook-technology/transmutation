@@ -10,8 +10,8 @@ module Transmutation
       instance_writer: instance_accessor,
       default: nil
     )
-      class_attribute_reader(*names, instance_reader: instance_reader, default: default)
-      class_attribute_writer(*names, instance_writer: instance_writer, default: default)
+      class_attribute_reader(*names, instance_reader:, default:)
+      class_attribute_writer(*names, instance_writer:, default:)
     end
 
     def class_attribute_reader(*names, instance_reader: true, default: nil)

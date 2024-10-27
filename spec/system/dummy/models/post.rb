@@ -40,7 +40,7 @@ class Post
 
   def as_json(_options = {})
     {
-      id: id,
+      id:,
       title: first_name,
       body: last_name
     }

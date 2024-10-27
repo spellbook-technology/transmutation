@@ -39,11 +39,11 @@ class Product
 
   def as_json(_options = {})
     {
-      id: id,
-      name: name,
-      description: description,
-      price_subunit: price_subunit,
-      price_currency: price_currency
+      id:,
+      name:,
+      description:,
+      price_subunit:,
+      price_currency:
     }
   end
 end

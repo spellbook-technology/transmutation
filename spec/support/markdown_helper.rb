@@ -6,7 +6,7 @@ module MarkdownHelper
     header_names = header_row.delete_prefix("|").split("|")&.map(&:strip)
 
     rows.map do |raw_row|
-      parse_markdown_row(raw_row, nil_value: nil_value, header_names: header_names)
+      parse_markdown_row(raw_row, nil_value:, header_names:)
     end
   end
 
@@ -20,7 +20,7 @@ module MarkdownHelper
     row = raw_row.delete_prefix("|").split("|")&.map(&:strip)
 
     row.each_with_object({}).with_index do |(value, hash), index|
-      hash[header_names[index].to_sym] = cast_nil_value(value, nil_value: nil_value)
+      hash[header_names[index].to_sym] = cast_nil_value(value, nil_value:)
     end
   end
 end
