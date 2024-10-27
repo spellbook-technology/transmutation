@@ -34,7 +34,7 @@ module Transmutation
           return potential_namespace.const_get(serializer_name) if potential_namespace.const_defined?(serializer_name)
         end
 
-        raise SerializerNotFound.new(object, namespace: serializer_namespace, name: serializer_name)
+        Transmutation::ObjectSerializer
       end
 
       # Returns the highest specificity serializer name for the given object.

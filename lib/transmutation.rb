@@ -46,4 +46,5 @@ loader = Zeitwerk::Loader.for_gem(warn_on_extra_files: false)
 loader.ignore("#{__dir__}/transmutation/core_ext")
 loader.setup
 
-require "transmutation/core_ext/array"
+require "active_support"
+require "active_support/core_ext/object/json"

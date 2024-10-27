@@ -84,8 +84,8 @@ RSpec.describe Transmutation::Serialization do
 
       let(:object) { Object.new }
 
-      it "raises an error" do
-        expect { serialize }.to raise_error(Transmutation::Serialization::Lookup::SerializerNotFound)
+      it "performs object's default as_json call" do
+        expect(serialize).to be_an_instance_of(Transmutation::ObjectSerializer)
       end
     end
   end

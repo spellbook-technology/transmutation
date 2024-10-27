@@ -4,7 +4,6 @@ module Transmutation
   module Serialization
     # Serialize a given object with the looked up serializer.
     #
-    #
     # @param object [Object] The object to serialize.
     # @param namespace [String, Symbol, Module] The namespace to lookup the serializer in.
     # @param serializer [String, Symbol, Class] The serializer to use.
@@ -12,7 +11,7 @@ module Transmutation
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
     def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: 1)
-      if object.respond_to?(:map)
+      if object.respond_to?(:map) && !object.respond_to?(:to_hash)
         return object.map do |item|
           serialize(item, namespace: namespace, serializer: serializer, depth: depth, max_depth: max_depth)
         end

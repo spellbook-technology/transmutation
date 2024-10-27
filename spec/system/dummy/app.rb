@@ -4,6 +4,7 @@ require "json"
 
 require_relative "controllers/base_controller"
 require_relative "controllers/api/application_controller"
+require_relative "controllers/api/v1/health_controller"
 require_relative "controllers/api/v1/posts_controller"
 require_relative "controllers/api/v1/products_controller"
 require_relative "controllers/api/v1/users_controller"

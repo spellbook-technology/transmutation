@@ -94,4 +94,20 @@ RSpec.describe "Rendering" do
       end
     end
   end
+
+  describe "Api::V1::HealthController" do
+    subject(:controller) { Api::V1::HealthController.new }
+
+    describe "#index" do
+      let(:expected_json) do
+        {
+          "ok" => true
+        }
+      end
+
+      it "returns a JSON object" do
+        expect(controller.index).to eq(expected_json)
+      end
+    end
+  end
 end
