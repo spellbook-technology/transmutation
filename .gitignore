@@ -12,6 +12,7 @@
 
 # Build artifacts
 *.gem
+Gemfile.lock
 
 # MacOS
 .DS_Store
