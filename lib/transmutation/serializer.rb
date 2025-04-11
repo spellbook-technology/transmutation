@@ -44,7 +44,7 @@ module Transmutation
       # Define an attribute to be serialized
       #
       # @param attribute_name [Symbol] The name of the attribute to serialize
-      # @param block [Proc] The block to call to get the value of the attribute
+      # @yield [object] The block to call to get the value of the attribute
       #   - The block is called in the context of the serializer instance
       #
       # @example
@@ -66,21 +66,23 @@ module Transmutation
       # @param association_name [Symbol] The name of the association to serialize
       # @param namespace [String, Symbol, Module] The namespace to lookup the association's serializer in
       # @param serializer [String, Symbol, Class] The serializer to use for the association's serialization
+      # @yield [object] The block to call to get the value of the association
+      #   - The block is called in the context of the serializer instance
+      #   - The return value from the block is automatically serialized
       #
       # @example
       #   class UserSerializer < Transmutation::Serializer
       #     association :posts
       #     association :comments, namespace: "Nested", serializer: "User::CommentSerializer"
+      #     association :archived_posts do
+      #       object.posts.archived
+      #     end
       #   end
-      def association(association_name, namespace: nil, serializer: nil)
+      def association(association_name, namespace: nil, serializer: nil, &custom_block)
         block = lambda do
-          serialize(
-            object.send(association_name),
-            namespace:,
-            serializer:,
-            depth: @depth + 1,
-            max_depth: @max_depth
-          )
+          association_instance = custom_block ? instance_exec(&custom_block) : object.send(association_name)
+
+          serialize(association_instance, namespace:, serializer:, depth: @depth + 1, max_depth: @max_depth)
         end
 
         attributes_config[association_name] = { block:, association: true }
