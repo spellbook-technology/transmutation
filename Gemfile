@@ -17,3 +17,5 @@ gem "simplecov-lcov"
 gem "undercover"
 
 gem "pry"
+
+gem "gem-release", require: false
