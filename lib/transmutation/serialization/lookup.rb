@@ -18,13 +18,13 @@ module Transmutation
       #   namespace: Api::V1::Admin::Detailed
       #   serializer: Chat::User
       #
-      #   This method will attempt to find a serializer defined in the following order:
+      #   # This method will attempt to find a serializer defined in the following order:
       #
-      #   - Api::V1::Admin::Detailed::Chat::UserSerializer
-      #   - Api::V1::Admin::Chat::UserSerializer
-      #   - Api::V1::Chat::UserSerializer
-      #   - Api::Chat::UserSerializer
-      #   - Chat::UserSerializer
+      #   # - Api::V1::Admin::Detailed::Chat::UserSerializer
+      #   # - Api::V1::Admin::Chat::UserSerializer
+      #   # - Api::V1::Chat::UserSerializer
+      #   # - Api::Chat::UserSerializer
+      #   # - Chat::UserSerializer
       def serializer_for(object, serializer: nil)
         serializer_name = serializer_name_for(object, serializer:)
 
@@ -65,14 +65,10 @@ module Transmutation
       end
 
       def serializer_namespace
-        return caller_namespace if @namespace.nil?
-        return @namespace       if @namespace.start_with?("::")
+        return @caller.namespace if @namespace.nil?
+        return @namespace        if @namespace.start_with?("::")
 
-        "#{caller_namespace}::#{@namespace}"
-      end
-
-      def caller_namespace
-        @caller_namespace ||= @caller.class.name.split("::")[...-1].join("::")
+        "#{@caller.namespace}::#{@namespace}"
       end
 
       def constantize_serializer!(namespace, name, object:)
