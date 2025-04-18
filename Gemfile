@@ -19,3 +19,4 @@ gem "undercover"
 gem "pry"
 
 gem "gem-release", require: false
+gem "solargraph", require: false
