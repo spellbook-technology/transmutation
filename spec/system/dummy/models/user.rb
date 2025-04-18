@@ -13,6 +13,10 @@ class User
     Post.all.select { |post| post.user_id == id }
   end
 
+  def comments
+    Comment.all.select { |comment| comment.user_id == id }
+  end
+
   # =====
   # Finder methods
   # =====

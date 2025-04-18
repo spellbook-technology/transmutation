@@ -32,6 +32,10 @@ RSpec.describe "Rendering" do
             { "id" => 1, "title" => "First post" },
             { "id" => 3, "title" => "Second post!?" }
           ],
+          "comments" => [
+            { "id" => 1, "body" => "First!" },
+            { "id" => 3, "body" => "Third!" }
+          ],
           "published_posts" => [
             { "id" => 1, "title" => "First post" }
           ]

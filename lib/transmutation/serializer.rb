@@ -88,10 +88,6 @@ module Transmutation
         attributes_config[association_name] = { block:, association: true }
       end
 
-      alias belongs_to association
-      alias has_one association
-      alias has_many association
-
       # Shorthand for defining multiple attributes
       #
       # @param attribute_names [Array<Symbol>] The names of the attributes to serialize
@@ -100,9 +96,9 @@ module Transmutation
       #   class UserSerializer < Transmutation::Serializer
       #     attributes :first_name, :last_name
       #   end
-      def attributes(*attribute_names)
+      def attributes(*attribute_names, **, &)
         attribute_names.each do |attribute_name|
-          attribute(attribute_name)
+          attribute(attribute_name, **, &)
         end
       end
 
@@ -114,11 +110,15 @@ module Transmutation
       #   class UserSerializer < Transmutation::Serializer
       #     associations :posts, :comments
       #   end
-      def associations(*association_names)
+      def associations(*association_names, **, &)
         association_names.each do |association_name|
-          association(association_name)
+          association(association_name, **, &)
         end
       end
+
+      alias belongs_to associations
+      alias has_one associations
+      alias has_many associations
     end
 
     private

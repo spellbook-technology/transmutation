@@ -6,7 +6,7 @@ module Api
       class UserSerializer < Api::V1::UserSerializer
         attributes :first_name, :last_name
 
-        has_many :posts, namespace: "::Api::V1"
+        has_many :posts, :comments, namespace: "::Api::V1"
 
         has_many :published_posts, namespace: "::Api::V1" do
           object.posts.reject { |post| post.published_at.nil? }
