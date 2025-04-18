@@ -42,8 +42,8 @@ module Transmutation
 end
 
 require "zeitwerk"
-loader = Zeitwerk::Loader.for_gem(warn_on_extra_files: false)
-loader.ignore("#{__dir__}/transmutation/core_ext")
+
+loader = Zeitwerk::Loader.for_gem
 loader.setup
 
 require "active_support"
