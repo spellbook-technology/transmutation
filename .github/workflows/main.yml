@@ -32,24 +32,28 @@ jobs:
       - name: Run lint
         run: bundle exec rubocop
 
-  release:
-    name: Publish gem to RubyGems.org
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
+  # The release workflow seems to have some issues. I'll reinstate it when I have time to fix it.
+  # The failing check on `main` doesn't inspire confidence.
+  # In the meantime, I'll release manually.
+  #
+  # release:
+  #   name: Publish gem to RubyGems.org
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   if: github.ref == 'refs/heads/main'
 
-    permissions:
-      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-      contents: write # IMPORTANT: this permission is required for `rake release` to push the release tag
+  #   permissions:
+  #     id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+  #     contents: write # IMPORTANT: this permission is required for `rake release` to push the release tag
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         bundler-cache: true
 
-      - name: Release gem
-        uses: rubygems/release-gem@v1
+  #     - name: Release gem
+  #       uses: rubygems/release-gem@v1
