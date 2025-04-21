@@ -35,12 +35,19 @@ module Transmutation
         Lookup.new(self, namespace:).serializer_for(object, serializer:)
     end
 
+    # @api private
     def self.cache
       @cache ||= {}
     end
 
+    # Returns the namespace of this class.
+    #
+    # @example
+    #   Api::V1::UsersController.namespace #=> "Api::V1"
+    #
+    # @return [String] The namespace of this class.
     def namespace
-      @namespace ||= self.class.name.split("::")[...-1].join("::")
+      @namespace ||= self.class.name.to_s[0, self.class.name.rindex("::") || 0]
     end
 
     private_class_method def self.included(base)
