@@ -8,22 +8,10 @@ It aims to be a performant and elegant solution for serializing Ruby objects int
 
 ## Installation
 
-Install the gem and add to your application's Gemfile by executing:
-
-```bash
-bundle add transmutation
-```
-
-or manually add the following to your Gemfile:
+Add the gem to your Gemfile and then run `bundle install` to install the gem.
 
 ```ruby
 gem "transmutation"
-```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install transmutation
 ```
 
 ## Usage
@@ -35,25 +23,29 @@ gem install transmutation
   ```ruby
   class UserSerializer < Transmutation::Serializer
     attributes :id, :name, :email
+
+    # You can define custom presentational attributes
+    attribute :has_space_in_name do
+      object.name.include?(" ")
+    end
+
+    belongs_to :organization # You can also use `has_one` or `association` to define "has one" relationships.
+
+    has_many :posts # You can also use the `association` method to define "has many" relationships.
   end
   ```
 
 - Serialize an object using the serializer class.
 
   ```ruby
-  class User
-    attr_reader :id, :name, :email
-
-    def initialize(id:, name:, email:)
-      @id = id
-      @name = name
-      @email = email
-    end
-  end
-
   user = User.new(id: 1, name: "John Doe", email: "john@example.com")
+  user.organization = Organization.new(id: 1, name: "Example Inc.")
+  user.posts = [
+    Post.new(id: 1, title: "My first post", body: "Sample body"),
+    Post.new(id: 3, title: "This looks promising", body: "More content")
+  ]
 
-  UserSerializer.new(user).to_json # => "{\"id\":1,\"name\":\"John Doe\",\"email\":\"john@example.com\"}"
+  UserSerializer.new(user).to_json # => "{\"id\":1,\"name\":\"John Doe\",\"has_space_in_name\":true,\"email\":\"john@example.com\",\"organization\":{\"id\":1,\"name\":\"Example Inc.\"},\"posts\":[{\"id\":1,\"title\":\"My first post\",\"body\":\"Sample body\"},{\"id\":3,\"title\":\"This looks promising\",\"body\":\"More content\"}]}"
   ```
 
   As long as your object responds to the attributes defined in the serializer, it can be serialized.
@@ -111,6 +103,8 @@ serialize(User.new) # => UserSerializer.new(User.new)
 ```
 
 If no serializer class is found, it will return the object as is.
+
+Under the hood, all `association` methods, i.e. `belongs_to`, `has_one`, and `has_many`, call `#serialize` to find the best-suited serializer class. Once a serializer class has been found once, equal circumstances will use the in-memory cache to return the serializer.
 
 ### With Ruby on Rails
 
@@ -210,7 +204,7 @@ If you follow the pattern outlined below, you can take full advantage of the aut
             └── user_serializer.rb
 ```
 
-### Serializers
+### Inheritance
 
 ```ruby
 class Api::UserSerializer < Transmutation::Serializer
@@ -231,15 +225,3 @@ To remove attributes, it is recommended to redefine all attributes and start ane
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/spellbook-technology/transmutation. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/spellbook-technology/transmutation/blob/main/CODE_OF_CONDUCT.md).
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Transmutation project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/spellbook-technology/transmutation/blob/main/CODE_OF_CONDUCT.md).
