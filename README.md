@@ -48,6 +48,33 @@ gem "transmutation"
   UserSerializer.new(user).to_json # => "{\"id\":1,\"name\":\"John Doe\",\"has_space_in_name\":true,\"email\":\"john@example.com\",\"organization\":{\"id\":1,\"name\":\"Example Inc.\"},\"posts\":[{\"id\":1,\"title\":\"My first post\",\"body\":\"Sample body\"},{\"id\":3,\"title\":\"This looks promising\",\"body\":\"More content\"}]}"
   ```
 
+  Formatted JSON output:
+
+  ```json
+  {
+    "id": 1,
+    "name": "John Doe",
+    "has_space_in_name": true,
+    "email": "john@example.com",
+    "organization": {
+      "id": 1,
+      "name": "Example Inc."
+    },
+    "posts": [
+      {
+        "id": 1,
+        "title": "My first post",
+        "body": "Sample body"
+      },
+      {
+        "id": 3,
+        "title": "This looks promising",
+        "body": "More content"
+      }
+    ]
+  }
+  ```
+
   As long as your object responds to the attributes defined in the serializer, it can be serialized.
 
   <details>
