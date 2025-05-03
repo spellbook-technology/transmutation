@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class User
-  attr_accessor :id, :first_name, :last_name
+  attr_accessor :id, :first_name, :last_name, :age
 
-  def initialize(id:, first_name:, last_name:)
+  def initialize(id:, first_name:, last_name:, age:)
     self.id = id
     self.first_name = first_name
     self.last_name = last_name
+    self.age = age
   end
 
   def posts
@@ -23,10 +24,10 @@ class User
 
   def self.all
     [
-      User.new(id: 1, first_name: "John", last_name: "Doe"),
-      User.new(id: 2, first_name: "Jane", last_name: "Doe"),
-      User.new(id: 3, first_name: "Adam", last_name: "Smith"),
-      User.new(id: 4, first_name: "Eve", last_name: "Smith")
+      User.new(id: 1, first_name: "John", last_name: "Doe", age: 18),
+      User.new(id: 2, first_name: "Jane", last_name: "Doe", age: 17),
+      User.new(id: 3, first_name: "Adam", last_name: "Smith", age: 30),
+      User.new(id: 4, first_name: "Eve", last_name: "Smith", age: 28)
     ]
   end
 

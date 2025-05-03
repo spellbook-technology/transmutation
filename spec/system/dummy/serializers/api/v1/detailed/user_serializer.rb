@@ -5,6 +5,7 @@ module Api
     module Detailed
       class UserSerializer < Api::V1::UserSerializer
         attributes :first_name, :last_name
+        attribute :age, if: ->(value) { value >= 18 }
 
         has_many :posts, :comments, namespace: "::Api::V1"
 
