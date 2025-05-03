@@ -28,22 +28,47 @@ RSpec.describe "Rendering" do
           "first_name" => "John",
           "last_name" => "Doe",
           "full_name" => "John Doe",
+          "age" => 18,
           "posts" => [
-            { "id" => 1, "title" => "First post" },
-            { "id" => 3, "title" => "Second post!?" }
+            { "id" => 1, "title" => "First post", "published" => true },
+            { "id" => 3, "title" => "Second post!?", "published" => false }
           ],
           "comments" => [
             { "id" => 1, "body" => "First!" },
             { "id" => 3, "body" => "Third!" }
           ],
           "published_posts" => [
-            { "id" => 1, "title" => "First post" }
+            { "id" => 1, "title" => "First post", "published" => true }
           ]
         }
       end
 
       it "returns a user serialized with the Api::V1::Detailed::UserSerializer" do
         expect(controller.show(1)).to eq(expected_json)
+      end
+
+      context "with a conditional attribute excluded" do
+        let(:expected_json) do
+          {
+            "id" => 2,
+            "first_name" => "Jane",
+            "last_name" => "Doe",
+            "full_name" => "Jane Doe",
+            "posts" => [
+              { "id" => 2, "title" => "How does this work?" }
+            ],
+            "comments" => [
+              { "body" => "Second!", "id" => 2 }
+            ],
+            "published_posts" => [
+              { "id" => 2, "title" => "How does this work?" }
+            ]
+          }
+        end
+
+        it "returns a user serialized with the Api::V1::Detailed::UserSerializer" do
+          expect(controller.show(2)).to eq(expected_json)
+        end
       end
     end
   end
@@ -54,9 +79,9 @@ RSpec.describe "Rendering" do
     describe "#index" do
       let(:expected_json) do
         [
-          { "id" => 1, "title" => "First post" },
+          { "id" => 1, "title" => "First post", "published" => true },
           { "id" => 2, "title" => "How does this work?" },
-          { "id" => 3, "title" => "Second post!?" }
+          { "id" => 3, "title" => "Second post!?", "published" => false }
         ]
       end
 
@@ -71,7 +96,8 @@ RSpec.describe "Rendering" do
           "id" => 1,
           "title" => "First post",
           "body" => "First!",
-          "user" => { "id" => 1, "first_name" => "John", "last_name" => "Doe", "full_name" => "John Doe" }
+          "published" => true,
+          "user" => { "id" => 1, "first_name" => "John", "last_name" => "Doe", "full_name" => "John Doe", "age" => 18 }
         }
       end
 
