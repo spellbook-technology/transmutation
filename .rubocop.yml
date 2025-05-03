@@ -1,3 +1,5 @@
+require: rubocop-rspec
+
 inherit_from: .rubocop_todo.yml
 
 AllCops:
@@ -23,4 +25,5 @@ Metrics/ParameterLists:
   Enabled: true
   CountKeywordArgs: false
 
-require: rubocop-rspec
+RSpec/NestedGroups:
+  Max: 4
