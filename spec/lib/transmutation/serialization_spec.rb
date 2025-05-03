@@ -89,18 +89,4 @@ RSpec.describe Transmutation::Serialization do
       end
     end
   end
-
-  # describe "#render" do
-  #   it "calls super when :json is not provided" do
-  #     expect(controller.render(html: example_object)).to eq({ html: example_object })
-  #   end
-
-  #   it "calls super when :serialize is false" do
-  #     expect(controller.render(json: example_object, serialize: false)).to eq(example_object)
-  #   end
-
-  #   it "calls super with the serializer for :json when :json does not respond to :map" do
-  #     expect(controller.render(json: example_object)).to eq({ "first_name" => "John" })
-  #   end
-  # end
 end
