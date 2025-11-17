@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "transmutation/class_attributes"
+
 # A performant and expressive solution for serializing Ruby objects into JSON, with a touch of opinionated "magic" ✨.
 #
 # @example Basic usage
@@ -38,6 +40,10 @@
 #     end
 #   end
 module Transmutation
+  extend ClassAttributes
+
+  class_attribute :max_depth, default: 1
+
   class Error < StandardError; end
 end
 

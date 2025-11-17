@@ -89,4 +89,120 @@ RSpec.describe Transmutation::Serialization do
       end
     end
   end
+
+  describe ".max_depth" do
+    let(:top_level_serializer) do
+      Class.new(Transmutation::Serializer) do
+        attribute :id
+
+        has_one :first_level
+      end
+    end
+
+    let(:first_level_serializer) do
+      Class.new(Transmutation::Serializer) do
+        attribute :id
+
+        has_one :second_level
+      end
+    end
+
+    let(:second_level_serializer) do
+      Class.new(Transmutation::Serializer) do
+        attribute :id
+      end
+    end
+
+    let(:top_level_class) do
+      Class.new do
+        attr_accessor :id, :first_level
+
+        def initialize(id:, first_level:)
+          @id = id
+          @first_level = first_level
+        end
+      end
+    end
+
+    let(:first_level_class) do
+      Class.new do
+        attr_accessor :id, :second_level
+
+        def initialize(id:, second_level:)
+          @id = id
+          @second_level = second_level
+        end
+      end
+    end
+
+    let(:second_level_class) do
+      Class.new do
+        attr_accessor :id
+
+        def initialize(id:)
+          @id = id
+        end
+      end
+    end
+
+    before do
+      stub_const("TopLevelSerializer", top_level_serializer)
+      stub_const("FirstLevelSerializer", first_level_serializer)
+      stub_const("SecondLevelSerializer", second_level_serializer)
+      stub_const("TopLevel", top_level_class)
+      stub_const("FirstLevel", first_level_class)
+      stub_const("SecondLevel", second_level_class)
+    end
+
+    it "returns a default value of 1" do
+      expect(Transmutation.max_depth).to eq(1)
+    end
+
+    it "serializes only 1 level of associations" do
+      second_level = SecondLevel.new(id: 3)
+      first_level  = FirstLevel.new(id: 2, second_level:)
+      top_level    = TopLevel.new(id: 1, first_level:)
+
+      serialized = caller.serialize(top_level)
+
+      expected_json = {
+        "id" => 1,
+        "first_level" => {
+          "id" => 2
+        }
+      }
+
+      expect(serialized.as_json).to eq(expected_json)
+    end
+
+    context "when the value is set to another value" do
+      before do
+        Transmutation.max_depth = 2
+      end
+
+      it "returns the maximum depth of the serializer" do
+        expect(Transmutation.max_depth).to eq(2)
+      end
+
+      it "serializes 2 levels of associations" do
+        second_level = SecondLevel.new(id: 3)
+        first_level  = FirstLevel.new(id: 2, second_level:)
+        top_level    = TopLevel.new(id: 1, first_level:)
+
+        serialized = caller.serialize(top_level)
+
+        expected_json = {
+          "id" => 1,
+          "first_level" => {
+            "id" => 2,
+            "second_level" => {
+              "id" => 3
+            }
+          }
+        }
+
+        expect(serialized.as_json).to eq(expected_json)
+      end
+    end
+  end
 end
