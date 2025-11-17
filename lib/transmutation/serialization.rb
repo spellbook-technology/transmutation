@@ -10,7 +10,7 @@ module Transmutation
     # @param max_depth [Integer] The maximum depth of nested associations to serialize.
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
-    def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: 1)
+    def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: Transmutation.max_depth)
       if object.respond_to?(:map) && !object.respond_to?(:to_hash)
         return object.map { |item| serialize(item, namespace:, serializer:, depth:, max_depth:) }
       end
