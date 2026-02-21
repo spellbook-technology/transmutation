@@ -33,9 +33,9 @@ module Transmutation
     def as_json(options = {})
       attributes_config.each_with_object({}) do |(attr_name, attr_options), hash|
         if attr_options[:association]
-          hash[attr_name.to_s] = instance_exec(&attr_options[:block]).as_json(options) if @depth + 1 <= @max_depth
+          hash[attr_options[:key]] = instance_exec(&attr_options[:block]).as_json(options) if @depth < @max_depth
         else
-          hash[attr_name.to_s] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
+          hash[attr_options[:key]] = attr_options[:block] ? instance_exec(&attr_options[:block]) : object.send(attr_name)
         end
       end
     end
@@ -56,7 +56,7 @@ module Transmutation
       #     end
       #   end
       def attribute(attribute_name, &block)
-        attributes_config[attribute_name] = { block: }
+        attributes_config[attribute_name] = { key: attribute_name.to_s, block: }
       end
 
       # Define an association to be serialized
@@ -85,7 +85,7 @@ module Transmutation
           serialize(association_instance, namespace:, serializer:, depth: @depth + 1, max_depth: @max_depth)
         end
 
-        attributes_config[association_name] = { block:, association: true }
+        attributes_config[association_name] = { key: association_name.to_s, block:, association: true }
       end
 
       # Shorthand for defining multiple attributes

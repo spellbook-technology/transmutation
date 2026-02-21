@@ -176,8 +176,12 @@ RSpec.describe Transmutation::Serialization do
     end
 
     context "when the value is set to another value" do
-      before do
+      around do |example|
+        original = Transmutation.max_depth
         Transmutation.max_depth = 2
+        example.run
+      ensure
+        Transmutation.max_depth = original
       end
 
       it "returns the maximum depth of the serializer" do

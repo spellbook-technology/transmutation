@@ -52,12 +52,11 @@ module Transmutation
         @potential_namespaces ||= begin
           namespace_parts = serializer_namespace.split("::")
 
-          namespaces = namespace_parts.filter_map.with_index do |part, index|
-            namespace = [*namespace_parts[...index], part].join("::")
+          namespaces = namespace_parts.each_with_index.filter_map do |_part, index|
+            ns = namespace_parts.first(index + 1).join("::")
+            next if ns.empty?
 
-            next if namespace.empty?
-
-            Object.const_get(namespace) if Object.const_defined?(namespace)
+            Object.const_get(ns) if Object.const_defined?(ns)
           end
 
           [*namespaces.reverse, Object]

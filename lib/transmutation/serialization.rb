@@ -47,7 +47,10 @@ module Transmutation
     #
     # @return [String] The namespace of this class.
     def namespace
-      @namespace ||= self.class.name.to_s[0, self.class.name.rindex("::") || 0]
+      @namespace ||= begin
+        name = self.class.name.to_s
+        name[0, name.rindex("::") || 0]
+      end
     end
 
     private_class_method def self.included(base)
