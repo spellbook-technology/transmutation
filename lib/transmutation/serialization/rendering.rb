@@ -21,9 +21,9 @@ module Transmutation
         max_depth = kwargs.delete(:max_depth) || Transmutation.max_depth
 
         return super(**kwargs) unless json
-        return super(**kwargs, json: json) unless should_serialize
+        return super(**kwargs, json:) unless should_serialize
 
-        super(**kwargs, json: serialize(json, namespace: namespace, serializer: serializer, max_depth: max_depth))
+        super(**kwargs, json: serialize(json, namespace:, serializer:, max_depth:))
       end
     end
   end
