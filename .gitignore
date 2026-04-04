@@ -16,3 +16,10 @@ Gemfile.lock
 
 # MacOS
 .DS_Store
+
+# Dummy app artifacts
+spec/dummy/log/
+spec/dummy/tmp/
+
+# Claude
+.claude/settings.local.json

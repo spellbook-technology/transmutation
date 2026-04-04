@@ -5,13 +5,11 @@ module Api
     class PostsController < Api::ApplicationController
       def index
         posts = Post.all
-
         render json: posts
       end
 
-      def show(id)
-        post = Post.find(id)
-
+      def show
+        post = Post.find(params[:id])
         render json: post, namespace: "Detailed"
       end
     end

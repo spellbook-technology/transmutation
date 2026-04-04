@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:
+      fail-fast: false
       matrix:
         ruby:
           - "3.2"
           - "3.3"
+          - "3.4"
+          - "4.0"
           - "ruby-head"
 
     steps:
