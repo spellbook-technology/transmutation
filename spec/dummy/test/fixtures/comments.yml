@@ -1,0 +1,14 @@
+first_comment:
+  id: 1
+  body: "First!"
+  user_id: 1
+
+second_comment:
+  id: 2
+  body: "Second!"
+  user_id: 2
+
+third_comment:
+  id: 3
+  body: "Third!"
+  user_id: 1

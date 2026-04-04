@@ -180,6 +180,10 @@ RSpec.describe Transmutation::Serialization do
         Transmutation.max_depth = 2
       end
 
+      after do
+        Transmutation.max_depth = 1
+      end
+
       it "returns the maximum depth of the serializer" do
         expect(Transmutation.max_depth).to eq(2)
       end

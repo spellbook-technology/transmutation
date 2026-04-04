@@ -1,0 +1,19 @@
+john:
+  id: 1
+  first_name: John
+  last_name: Doe
+
+jane:
+  id: 2
+  first_name: Jane
+  last_name: Doe
+
+adam:
+  id: 3
+  first_name: Adam
+  last_name: Smith
+
+eve:
+  id: 4
+  first_name: Eve
+  last_name: Smith

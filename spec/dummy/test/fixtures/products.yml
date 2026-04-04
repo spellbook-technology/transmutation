@@ -1,0 +1,6 @@
+shoes:
+  id: 1
+  name: Shoes
+  description: A pair of shoes
+  price_subunit: 1000
+  price_currency: GBP

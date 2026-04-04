@@ -5,13 +5,11 @@ module Api
     class UsersController < Api::ApplicationController
       def index
         users = User.all
-
         render json: users
       end
 
-      def show(id)
-        user = User.find(id)
-
+      def show
+        user = User.find(params[:id])
         render json: user, serializer: "Detailed::UserSerializer"
       end
     end
