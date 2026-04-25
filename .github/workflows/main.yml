@@ -37,6 +37,26 @@ jobs:
       - name: Run lint
         run: bundle exec rubocop
 
+  benchmarks:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    name: Benchmarks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: benchmarks
+
+      - name: Run benchmarks
+        working-directory: benchmarks
+        run: bundle exec ruby benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
+
   # The release workflow seems to have some issues. I'll reinstate it when I have time to fix it.
   # The failing check on `main` doesn't inspire confidence.
   # In the meantime, I'll release manually.
