@@ -56,16 +56,36 @@ jobs:
           bundler-cache: true
           working-directory: benchmarks
 
-      - name: Run benchmarks
+      - name: Run benchmarks (head, interpreter)
         working-directory: benchmarks
         run: |
-          echo "# Benchmarks (interpreter)" >> "$GITHUB_STEP_SUMMARY"
+          echo "# Benchmarks — head @ interpreter" >> "$GITHUB_STEP_SUMMARY"
           bundle exec ruby benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: Run benchmarks (YJIT)
+      - name: Run benchmarks (head, YJIT)
         working-directory: benchmarks
         run: |
-          echo "# Benchmarks (YJIT)" >> "$GITHUB_STEP_SUMMARY"
+          echo "# Benchmarks — head @ YJIT" >> "$GITHUB_STEP_SUMMARY"
+          bundle exec ruby --yjit benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # transmutation is a path gem (../), so swapping lib/ to main's version makes the
+      # following passes benchmark main for a like-for-like comparison on the same runner.
+      - name: Check out lib from main
+        run: |
+          git fetch --depth=1 origin main
+          rm -rf lib
+          git checkout FETCH_HEAD -- lib
+
+      - name: Run benchmarks (main, interpreter)
+        working-directory: benchmarks
+        run: |
+          echo "# Benchmarks — main @ interpreter" >> "$GITHUB_STEP_SUMMARY"
+          bundle exec ruby benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Run benchmarks (main, YJIT)
+        working-directory: benchmarks
+        run: |
+          echo "# Benchmarks — main @ YJIT" >> "$GITHUB_STEP_SUMMARY"
           bundle exec ruby --yjit benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
 
   # The release workflow seems to have some issues. I'll reinstate it when I have time to fix it.
