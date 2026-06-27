@@ -58,7 +58,15 @@ jobs:
 
       - name: Run benchmarks
         working-directory: benchmarks
-        run: bundle exec ruby benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "# Benchmarks (interpreter)" >> "$GITHUB_STEP_SUMMARY"
+          bundle exec ruby benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Run benchmarks (YJIT)
+        working-directory: benchmarks
+        run: |
+          echo "# Benchmarks (YJIT)" >> "$GITHUB_STEP_SUMMARY"
+          bundle exec ruby --yjit benchmark.rb | tee -a "$GITHUB_STEP_SUMMARY"
 
   # The release workflow seems to have some issues. I'll reinstate it when I have time to fix it.
   # The failing check on `main` doesn't inspire confidence.
