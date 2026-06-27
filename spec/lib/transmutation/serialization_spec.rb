@@ -88,6 +88,38 @@ RSpec.describe Transmutation::Serialization do
         expect(serialize).to be_an_instance_of(Transmutation::ObjectSerializer)
       end
     end
+
+    context "when given a collection" do
+      before do
+        stub_const("Api::V1::Admin::Chat::UserSerializer", Class.new(Transmutation::Serializer))
+      end
+
+      it "serializes every item with the looked up serializer" do
+        collection = [object, Object.const_get(object_class_name).new]
+
+        serialized = caller.serialize(collection)
+
+        expect(serialized.map(&:class)).to eq([Api::V1::Admin::Chat::UserSerializer] * 2)
+      end
+
+      it "serializes each item with the serializer for its own class" do
+        other_class = Class.new
+        stub_const("Chat::Admin", other_class)
+        stub_const("Api::V1::Admin::Chat::AdminSerializer", Class.new(Transmutation::Serializer))
+
+        serialized = caller.serialize([object, other_class.new])
+
+        expect(serialized.map(&:class)).to eq(
+          [Api::V1::Admin::Chat::UserSerializer, Api::V1::Admin::Chat::AdminSerializer]
+        )
+      end
+
+      it "serializes nested collections" do
+        serialized = caller.serialize([[object]])
+
+        expect(serialized[0]).to all(be_an_instance_of(Api::V1::Admin::Chat::UserSerializer))
+      end
+    end
   end
 
   describe ".max_depth" do

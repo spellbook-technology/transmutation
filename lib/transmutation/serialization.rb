@@ -11,9 +11,7 @@ module Transmutation
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
     def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: Transmutation.max_depth)
-      if object.respond_to?(:map) && !object.respond_to?(:to_hash)
-        return object.map { |item| serialize(item, namespace:, serializer:, depth:, max_depth:) }
-      end
+      return serialize_collection(object, namespace:, serializer:, depth:, max_depth:) if collection?(object)
 
       lookup_serializer(object, namespace:, serializer:).new(object, depth:, max_depth:)
     end
@@ -48,6 +46,32 @@ module Transmutation
     # @return [String] The namespace of this class.
     def namespace
       @namespace ||= self.class.name.to_s[0, self.class.name.rindex("::") || 0]
+    end
+
+    private
+
+    def collection?(object)
+      object.respond_to?(:map) && !object.respond_to?(:to_hash)
+    end
+
+    # Serialize each item in a collection.
+    #
+    # Items of the same class resolve to the same serializer, so the lookup is memoised on the item's
+    # class and reused across siblings rather than rebuilding the cache key (and hashing it) per item.
+    def serialize_collection(collection, namespace:, serializer:, depth:, max_depth:)
+      serializer_class = nil
+      serialized_class = nil
+
+      collection.map do |item|
+        next serialize(item, namespace:, serializer:, depth:, max_depth:) if collection?(item)
+
+        if item.class != serialized_class
+          serializer_class = lookup_serializer(item, namespace:, serializer:)
+          serialized_class = item.class
+        end
+
+        serializer_class.new(item, depth:, max_depth:)
+      end
     end
 
     private_class_method def self.included(base)
