@@ -11,6 +11,9 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     name: Ruby ${{ matrix.ruby }}
+    # ruby-head is a moving target; allow its toolchain breakages (e.g. native gems
+    # failing to compile against nightly) to fail without turning the whole run red.
+    continue-on-error: ${{ matrix.ruby == 'ruby-head' }}
     strategy:
       fail-fast: false
       matrix:
