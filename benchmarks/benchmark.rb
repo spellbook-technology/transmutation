@@ -92,7 +92,7 @@ warn(TRANSMUTATION_MAIN ? "Benchmarking head vs main." : "Benchmarking head only
 
 GemBenchmarks.report output: false do
   group("Attributes") do
-    example("transmutation")            { Transmutation::OrganisationSerializer.new(organisation).to_json }
+    example("transmutation (HEAD)")     { Transmutation::OrganisationSerializer.new(organisation).to_json }
     example("transmutation (main)")     { TRANSMUTATION_MAIN::OrganisationSerializer.new(organisation).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::OrganisationSerializer.new.serialize_to_json(organisation) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(organisation_jbuilder_template); json.target! } }
@@ -103,7 +103,7 @@ GemBenchmarks.report output: false do
   end
 
   group("Has One / Belongs To") do
-    example("transmutation")            { Transmutation::PostSerializer.new(post).to_json }
+    example("transmutation (HEAD)")     { Transmutation::PostSerializer.new(post).to_json }
     example("transmutation (main)")     { TRANSMUTATION_MAIN::PostSerializer.new(post).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::PostSerializer.new(except: { user: [:posts] }).serialize_to_json(post) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(post_jbuilder_template); json.target! } }
@@ -114,7 +114,7 @@ GemBenchmarks.report output: false do
   end
 
   group("Has Many") do
-    example("transmutation")            { Transmutation::UserSerializer.new(user).to_json }
+    example("transmutation (HEAD)")     { Transmutation::UserSerializer.new(user).to_json }
     example("transmutation (main)")     { TRANSMUTATION_MAIN::UserSerializer.new(user).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::UserSerializer.new.serialize_to_json(user) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(user_jbuilder_template); json.target! } }
@@ -125,7 +125,7 @@ GemBenchmarks.report output: false do
   end
 
   group("Collection") do
-    example("transmutation")            { organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json }
+    example("transmutation (HEAD)")     { organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json }
     example("transmutation (main)")     { organisations.map { TRANSMUTATION_MAIN::OrganisationSerializer.new(_1) }.to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { Panko::ArraySerializer.new(organisations, each_serializer: PankoSerializer::OrganisationSerializer).to_json }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(organisations_jbuilder_template); json.target! } }
