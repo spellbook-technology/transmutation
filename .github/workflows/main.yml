@@ -52,12 +52,12 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "4.0"
+          ruby-version: "3.4"
           bundler-cache: true
           working-directory: benchmarks
 
-      # Export main's library so the harness can load it alongside head (in an isolated
-      # namespace) and benchmark both revisions in a single process.
+      # Export main's library so the harness can load it alongside head — in an isolated module,
+      # see benchmark.rb — and benchmark both revisions side by side in a single process.
       - name: Fetch main revision of the library
         run: |
           git fetch --depth=1 origin main
@@ -67,7 +67,6 @@ jobs:
       - name: Run benchmarks (interpreter)
         working-directory: benchmarks
         env:
-          RUBY_NAMESPACE: "1"
           TRANSMUTATION_MAIN_LIB: ${{ runner.temp }}/transmutation-main/lib
         run: |
           echo "# Benchmarks (interpreter) — head vs main" >> "$GITHUB_STEP_SUMMARY"
@@ -76,7 +75,6 @@ jobs:
       - name: Run benchmarks (YJIT)
         working-directory: benchmarks
         env:
-          RUBY_NAMESPACE: "1"
           TRANSMUTATION_MAIN_LIB: ${{ runner.temp }}/transmutation-main/lib
         run: |
           echo "# Benchmarks (YJIT) — head vs main" >> "$GITHUB_STEP_SUMMARY"
