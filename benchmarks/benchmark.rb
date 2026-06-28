@@ -39,28 +39,51 @@ organisations = [organisation] + 29.times.map { Organisation.new(id: _1 + 2, nam
 # be benchmarked side by side with the working tree (head) in a single process. This relies on Ruby's
 # experimental Namespace feature (Ruby 4.0+, RUBY_NAMESPACE=1); if it is unavailable or fails to load,
 # we simply skip the comparison and benchmark head on its own.
+# The gem's source files in load order. transmutation.rb itself is skipped: it boots Zeitwerk, which
+# would bind the top-level ::Transmutation constant and defeat the isolation, so we recreate its
+# module-level setup inline instead.
+TRANSMUTATION_MAIN_SOURCES = %w[
+  transmutation/class_attributes
+  transmutation/serialization/lookup/serializer_not_found
+  transmutation/serialization/lookup
+  transmutation/serialization/rendering
+  transmutation/serialization
+  transmutation/serializer
+  transmutation/object_serializer
+].freeze
+
 def load_transmutation_main
   lib = ENV.fetch("TRANSMUTATION_MAIN_LIB", nil)
   return unless lib
 
-  unless defined?(Namespace)
-    warn "Namespace constant unavailable (RUBY_NAMESPACE=#{ENV['RUBY_NAMESPACE'].inspect}); benchmarking head only."
-    return
+  # Evaluate the library's source as strings into an anonymous module. A string `module_eval` nests
+  # under the receiver, so every `module Transmutation` lands in `wrapper::Transmutation` — a copy
+  # fully isolated from the working tree's top-level `Transmutation`, with no source rewriting.
+  wrapper = Module.new
+  TRANSMUTATION_MAIN_SOURCES.each do |source|
+    wrapper.module_eval(File.read(File.join(lib, "#{source}.rb")), "#{source}.rb")
+
+    next unless source.end_with?("class_attributes")
+
+    wrapper.module_eval(<<~RUBY, "transmutation_main_bootstrap.rb")
+      module Transmutation
+        extend ClassAttributes
+        class_attribute :max_depth, default: 1
+        class Error < StandardError; end
+      end
+    RUBY
   end
 
-  namespace = Namespace.new
-
-  $LOAD_PATH.unshift(lib)
-  begin
-    namespace.require("transmutation")
-    Dir[File.expand_path("lib/serializers/transmutation/*.rb", __dir__)].sort.each { |file| namespace.require(file) }
-  ensure
-    $LOAD_PATH.delete(lib)
+  # Load the benchmark's own serializers into the same isolated copy.
+  Dir[File.expand_path("lib/serializers/transmutation/*.rb", __dir__)].sort.each do |file|
+    wrapper.module_eval(File.read(file), file)
   end
 
-  namespace::Transmutation
+  # Naming the module (a top-level constant) lets the serializer's namespace-based association lookup
+  # resolve its sibling serializers, exactly as it does for the working-tree copy.
+  Object.const_set(:TransmutationMain, wrapper::Transmutation)
 rescue StandardError, ScriptError => e
-  warn "Skipping `transmutation (main)` comparison: #{e.class}: #{e.message}\n#{e.backtrace&.first(3)&.join("\n")}"
+  warn "Skipping `transmutation (main)` comparison: #{e.class}: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
   nil
 end
 

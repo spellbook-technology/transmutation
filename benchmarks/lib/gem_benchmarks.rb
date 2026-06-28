@@ -124,7 +124,9 @@ class GemBenchmarks
       def initialize(gem_name, **config, &block)
         @gem_name = gem_name
         @config = config
-        @label = if config[:style] == :markdown
+        @label = if specs.nil?
+                   gem_name
+                 elsif config[:style] == :markdown
                    "[#{gem_name} #{gem_version}](#{gem_url})"
                  else
                    "#{gem_name} #{gem_version}"
