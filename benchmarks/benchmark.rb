@@ -41,7 +41,12 @@ organisations = [organisation] + 29.times.map { Organisation.new(id: _1 + 2, nam
 # we simply skip the comparison and benchmark head on its own.
 def load_transmutation_main
   lib = ENV.fetch("TRANSMUTATION_MAIN_LIB", nil)
-  return unless lib && defined?(Namespace) && Namespace.respond_to?(:enabled?) && Namespace.enabled?
+  return unless lib
+
+  unless defined?(Namespace)
+    warn "Namespace constant unavailable (RUBY_NAMESPACE=#{ENV['RUBY_NAMESPACE'].inspect}); benchmarking head only."
+    return
+  end
 
   namespace = Namespace.new
 
@@ -55,7 +60,7 @@ def load_transmutation_main
 
   namespace::Transmutation
 rescue StandardError, ScriptError => e
-  warn "Skipping `transmutation (main)` comparison: #{e.class}: #{e.message}"
+  warn "Skipping `transmutation (main)` comparison: #{e.class}: #{e.message}\n#{e.backtrace&.first(3)&.join("\n")}"
   nil
 end
 
