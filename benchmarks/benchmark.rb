@@ -35,9 +35,37 @@ post = Post.new(id: 1, title: "Sample Post", body: "Sample Body", user_id: 1)
 
 organisations = [organisation] + 29.times.map { Organisation.new(id: _1 + 2, name: "Example Inc. #{_1 + 2}") }
 
+# Optionally load another revision of transmutation (e.g. main) into an isolated namespace so it can
+# be benchmarked side by side with the working tree (head) in a single process. This relies on Ruby's
+# experimental Namespace feature (Ruby 4.0+, RUBY_NAMESPACE=1); if it is unavailable or fails to load,
+# we simply skip the comparison and benchmark head on its own.
+def load_transmutation_main
+  lib = ENV.fetch("TRANSMUTATION_MAIN_LIB", nil)
+  return unless lib && defined?(Namespace) && Namespace.respond_to?(:enabled?) && Namespace.enabled?
+
+  namespace = Namespace.new
+
+  $LOAD_PATH.unshift(lib)
+  begin
+    namespace.require("transmutation")
+    Dir[File.expand_path("lib/serializers/transmutation/*.rb", __dir__)].sort.each { |file| namespace.require(file) }
+  ensure
+    $LOAD_PATH.delete(lib)
+  end
+
+  namespace::Transmutation
+rescue StandardError, ScriptError => e
+  warn "Skipping `transmutation (main)` comparison: #{e.class}: #{e.message}"
+  nil
+end
+
+TRANSMUTATION_MAIN = load_transmutation_main
+warn(TRANSMUTATION_MAIN ? "Benchmarking head vs main." : "Benchmarking head only.")
+
 GemBenchmarks.report output: false do
   group("Attributes") do
     example("transmutation")            { Transmutation::OrganisationSerializer.new(organisation).to_json }
+    example("transmutation (main)")     { TRANSMUTATION_MAIN::OrganisationSerializer.new(organisation).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::OrganisationSerializer.new.serialize_to_json(organisation) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(organisation_jbuilder_template); json.target! } }
     example("representable")            { Representable::OrganisationRepresenter.new(organisation).to_json }
@@ -48,6 +76,7 @@ GemBenchmarks.report output: false do
 
   group("Has One / Belongs To") do
     example("transmutation")            { Transmutation::PostSerializer.new(post).to_json }
+    example("transmutation (main)")     { TRANSMUTATION_MAIN::PostSerializer.new(post).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::PostSerializer.new(except: { user: [:posts] }).serialize_to_json(post) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(post_jbuilder_template); json.target! } }
     example("representable")            { Representable::PostRepresenter.new(post).to_json }
@@ -58,6 +87,7 @@ GemBenchmarks.report output: false do
 
   group("Has Many") do
     example("transmutation")            { Transmutation::UserSerializer.new(user).to_json }
+    example("transmutation (main)")     { TRANSMUTATION_MAIN::UserSerializer.new(user).to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { PankoSerializer::UserSerializer.new.serialize_to_json(user) }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(user_jbuilder_template); json.target! } }
     example("representable")            { Representable::UserRepresenter.new(user).to_json }
@@ -68,6 +98,7 @@ GemBenchmarks.report output: false do
 
   group("Collection") do
     example("transmutation")            { organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json }
+    example("transmutation (main)")     { organisations.map { TRANSMUTATION_MAIN::OrganisationSerializer.new(_1) }.to_json } if TRANSMUTATION_MAIN
     example("panko_serializer")         { Panko::ArraySerializer.new(organisations, each_serializer: PankoSerializer::OrganisationSerializer).to_json }
     example("jbuilder")                 { Jbuilder.encode { |json| json.instance_eval(organisations_jbuilder_template); json.target! } }
     example("representable")            { Representable::OrganisationRepresenter.for_collection.new(organisations).to_json }
