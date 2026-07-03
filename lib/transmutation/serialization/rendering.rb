@@ -19,11 +19,12 @@ module Transmutation
         namespace = kwargs.delete(:namespace)
         serializer = kwargs.delete(:serializer)
         max_depth = kwargs.delete(:max_depth) || Transmutation.max_depth
+        context = kwargs.delete(:context) { self }
 
         return super(**kwargs) unless json
         return super(**kwargs, json:) unless should_serialize
 
-        super(**kwargs, json: serialize(json, namespace:, serializer:, max_depth:))
+        super(**kwargs, json: serialize(json, namespace:, serializer:, max_depth:, context:))
       end
     end
   end

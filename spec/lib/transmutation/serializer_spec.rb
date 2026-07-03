@@ -139,4 +139,36 @@ RSpec.describe Transmutation::Serializer do
       end
     end
   end
+
+  describe "context" do
+    let(:context_class) do
+      Class.new do
+        def initialize(admin:)
+          @admin = admin
+        end
+
+        attr_reader :admin
+        alias_method :admin?, :admin
+      end
+    end
+
+    let(:example_serializer) do
+      Class.new(Transmutation::Serializer) do
+        attribute :first_name
+        attribute :last_name, if: -> { context.admin? }
+      end
+    end
+
+    it "exposes the context to conditions and includes the attribute when it passes" do
+      serialized = example_serializer.new(example_object, context: context_class.new(admin: true))
+
+      expect(serialized.as_json).to eq({ "first_name" => "John", "last_name" => "Doe" })
+    end
+
+    it "excludes the attribute when the context condition fails" do
+      serialized = example_serializer.new(example_object, context: context_class.new(admin: false))
+
+      expect(serialized.as_json).to eq({ "first_name" => "John" })
+    end
+  end
 end
