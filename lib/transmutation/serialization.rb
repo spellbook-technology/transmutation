@@ -8,12 +8,14 @@ module Transmutation
     # @param namespace [String, Symbol, Module] The namespace to lookup the serializer in.
     # @param serializer [String, Symbol, Class] The serializer to use.
     # @param max_depth [Integer] The maximum depth of nested associations to serialize.
+    # @param context [Object] Arbitrary context made available to the serializer as `#context`.
+    #   Defaults to the caller (e.g. the controller), so serializers can reach `context.current_user`.
     #
     # @return [Transmutation::Serializer] The serialized object. This will respond to `#as_json` and `#to_json`.
-    def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: Transmutation.max_depth)
-      return serialize_collection(object, namespace:, serializer:, depth:, max_depth:) if collection?(object)
+    def serialize(object, namespace: nil, serializer: nil, depth: 0, max_depth: Transmutation.max_depth, context: self)
+      return serialize_collection(object, namespace:, serializer:, depth:, max_depth:, context:) if collection?(object)
 
-      lookup_serializer(object, namespace:, serializer:).new(object, depth:, max_depth:)
+      lookup_serializer(object, namespace:, serializer:).new(object, depth:, max_depth:, context:)
     end
 
     # Lookup the serializer for the given object.
@@ -58,19 +60,19 @@ module Transmutation
     #
     # Items of the same class resolve to the same serializer, so the lookup is memoised on the item's
     # class and reused across siblings rather than rebuilding the cache key (and hashing it) per item.
-    def serialize_collection(collection, namespace:, serializer:, depth:, max_depth:)
+    def serialize_collection(collection, namespace:, serializer:, depth:, max_depth:, context:)
       serializer_class = nil
       serialized_class = nil
 
       collection.map do |item|
-        next serialize(item, namespace:, serializer:, depth:, max_depth:) if collection?(item)
+        next serialize(item, namespace:, serializer:, depth:, max_depth:, context:) if collection?(item)
 
         if item.class != serialized_class
           serializer_class = lookup_serializer(item, namespace:, serializer:)
           serialized_class = item.class
         end
 
-        serializer_class.new(item, depth:, max_depth:)
+        serializer_class.new(item, depth:, max_depth:, context:)
       end
     end
 

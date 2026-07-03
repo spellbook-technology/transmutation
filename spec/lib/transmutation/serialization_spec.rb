@@ -241,4 +241,64 @@ RSpec.describe Transmutation::Serialization do
       end
     end
   end
+
+  describe "context" do
+    before do
+      stub_const("Api::V1::Admin::Chat::UserSerializer", Class.new(Transmutation::Serializer))
+    end
+
+    it "defaults the context to the caller" do
+      expect(caller.serialize(object).context).to be(caller)
+    end
+
+    it "uses an explicit context when provided" do
+      given_context = Object.new
+
+      expect(caller.serialize(object, context: given_context).context).to be(given_context)
+    end
+
+    context "when serializing associations" do
+      let(:context_class) do
+        Class.new do
+          def initialize(visible:)
+            @visible = visible
+          end
+
+          attr_reader :visible
+          alias_method :visible?, :visible
+        end
+      end
+
+      before do
+        author_class = Class.new do
+          def name = "Jane"
+        end
+
+        post_class = Class.new do
+          define_method(:author) { @author ||= Ctx::Author.new }
+        end
+
+        stub_const("Ctx::Author", author_class)
+        stub_const("Ctx::Post", post_class)
+        stub_const("Ctx::AuthorSerializer", Class.new(Transmutation::Serializer) do
+          attribute :name, if: -> { context.visible? }
+        end)
+        stub_const("Ctx::PostSerializer", Class.new(Transmutation::Serializer) do
+          belongs_to :author
+        end)
+      end
+
+      it "propagates the context to associated serializers" do
+        serialized = Ctx::PostSerializer.new(Ctx::Post.new, context: context_class.new(visible: true), max_depth: 2)
+
+        expect(serialized.as_json).to eq({ "author" => { "name" => "Jane" } })
+      end
+
+      it "lets associated serializers gate attributes on the shared context" do
+        serialized = Ctx::PostSerializer.new(Ctx::Post.new, context: context_class.new(visible: false), max_depth: 2)
+
+        expect(serialized.as_json).to eq({ "author" => {} })
+      end
+    end
+  end
 end
