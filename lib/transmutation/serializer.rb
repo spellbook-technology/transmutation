@@ -32,7 +32,7 @@ module Transmutation
     end
 
     def as_json(options = {})
-      fields.each_with_object({}) do |field, hash|
+      self.class.field_list.each_with_object({}) do |field, hash|
         hash[field.key] = field.value(self, options) if field.render?(self)
       end
     end
@@ -59,6 +59,7 @@ module Transmutation
       #   end
       def attribute(attribute_name, **options, &block)
         fields[attribute_name] = Attribute.new(attribute_name, **options, &block)
+        @field_list = nil
       end
 
       # Define an association to be serialized
@@ -84,6 +85,13 @@ module Transmutation
       #   end
       def association(association_name, namespace: nil, serializer: nil, **options, &block)
         fields[association_name] = Association.new(association_name, namespace:, serializer:, **options, &block)
+        @field_list = nil
+      end
+
+      # The declared fields as a frozen array, memoised so `#as_json` never rebuilds it (and avoids
+      # the `class_attribute` reader, which allocates the ivar-name string on every read).
+      def field_list
+        @field_list ||= fields.values.freeze
       end
 
       # Shorthand for defining multiple attributes
@@ -128,11 +136,6 @@ module Transmutation
     private
 
     class_attribute :fields, instance_accessor: false, default: {}
-
-    # The fields declared on this serializer, in declaration order.
-    def fields
-      self.class.fields.values
-    end
 
     private_class_method def self.inherited(subclass)
       super
