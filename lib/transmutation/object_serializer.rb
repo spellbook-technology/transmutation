@@ -7,5 +7,9 @@ module Transmutation
     def as_json(options = {})
       object.as_json(options)
     end
+
+    def write_json(writer, options = {})
+      writer.push_value(object.as_json(options))
+    end
   end
 end

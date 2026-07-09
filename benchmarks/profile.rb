@@ -28,6 +28,33 @@ def profile(label, &block)
   report.allocated_objects_by_location.first(8).each { |r| puts format("  %6d  %s", r[:count], r[:data]) }
 end
 
-profile("Attributes  (1 org)")        { Transmutation::OrganisationSerializer.new(organisation).to_json }
-profile("Has Many    (1 user)")       { Transmutation::UserSerializer.new(user).to_json }
-profile("Collection  (30 orgs)")      { organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json }
+def stream(serializer)
+  writer = Oj::StringWriter.new(mode: :rails)
+  serializer.write_json(writer)
+  writer.to_s.chomp
+end
+
+def stream_collection(objects, serializer_class)
+  writer = Oj::StringWriter.new(mode: :rails)
+  writer.push_array
+  objects.each { |object| serializer_class.new(object).write_json(writer) }
+  writer.pop
+  writer.to_s.chomp
+end
+
+# Sanity: the streaming output must match the hash-then-encode output.
+{
+  "attributes" => [Transmutation::OrganisationSerializer.new(organisation).to_json, stream(Transmutation::OrganisationSerializer.new(organisation))],
+  "has_many" => [Transmutation::UserSerializer.new(user).to_json, stream(Transmutation::UserSerializer.new(user))],
+  "collection" => [organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json, stream_collection(organisations, Transmutation::OrganisationSerializer)]
+}.each do |label, (hash_json, streamed_json)|
+  abort("MISMATCH (#{label}):\n  hash:   #{hash_json}\n  stream: #{streamed_json}") if hash_json != streamed_json
+end
+puts "streaming output matches as_json.to_json for all scenarios ✔"
+
+profile("Attributes  (1 org)")             { Transmutation::OrganisationSerializer.new(organisation).to_json }
+profile("Attributes  (1 org, streamed)")   { stream(Transmutation::OrganisationSerializer.new(organisation)) }
+profile("Has Many    (1 user)")            { Transmutation::UserSerializer.new(user).to_json }
+profile("Has Many    (1 user, streamed)")  { stream(Transmutation::UserSerializer.new(user)) }
+profile("Collection  (30 orgs)")           { organisations.map { Transmutation::OrganisationSerializer.new(_1) }.to_json }
+profile("Collection  (30 orgs, streamed)") { stream_collection(organisations, Transmutation::OrganisationSerializer) }

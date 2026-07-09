@@ -301,4 +301,76 @@ RSpec.describe Transmutation::Serialization do
       end
     end
   end
+
+  describe "#write_json" do
+    subject(:writer) do
+      Class.new do
+        def calls = @calls ||= []
+        def push_object(key = nil) = calls << [:push_object, key]
+        def push_array(key = nil) = calls << [:push_array, key]
+        def push_key(key) = calls << [:push_key, key]
+        def push_value(value, key = nil) = calls << [:push_value, value, key]
+        def pop = calls << [:pop]
+      end.new
+    end
+
+    before do
+      author_class = Class.new do
+        def initialize = (@name = "Jane")
+
+        attr_reader :name
+      end
+
+      post_class = Class.new do
+        define_method(:author) { @author ||= Stream::Author.new }
+      end
+
+      blog_class = Class.new do
+        define_method(:posts) { [Stream::Post.new, Stream::Post.new] }
+      end
+
+      stub_const("Stream::Author", author_class)
+      stub_const("Stream::Post", post_class)
+      stub_const("Stream::Blog", blog_class)
+      stub_const("Stream::AuthorSerializer", Class.new(Transmutation::Serializer) do
+        attribute :name
+      end)
+      stub_const("Stream::PostSerializer", Class.new(Transmutation::Serializer) do
+        belongs_to :author
+      end)
+      stub_const("Stream::BlogSerializer", Class.new(Transmutation::Serializer) do
+        has_many :posts
+      end)
+    end
+
+    it "streams attributes as key-value pairs inside an object" do
+      Stream::AuthorSerializer.new(Stream::Author.new).write_json(writer)
+
+      expect(writer.calls).to eq([[:push_object, nil], [:push_value, "Jane", "name"], [:pop]])
+    end
+
+    it "streams singular associations as nested objects" do
+      Stream::PostSerializer.new(Stream::Post.new).write_json(writer)
+
+      expect(writer.calls).to eq(
+        [[:push_object, nil], [:push_key, "author"], [:push_object, nil], [:push_value, "Jane", "name"], [:pop],
+         [:pop]]
+      )
+    end
+
+    it "streams collection associations as arrays of nested objects" do
+      Stream::BlogSerializer.new(Stream::Blog.new).write_json(writer)
+
+      expect(writer.calls).to eq(
+        [[:push_object, nil], [:push_array, "posts"], [:push_object, nil], [:pop], [:push_object, nil], [:pop],
+         [:pop], [:pop]]
+      )
+    end
+
+    it "streams objects without a serializer via their #as_json" do
+      Transmutation::ObjectSerializer.new(Stream::Author.new).write_json(writer)
+
+      expect(writer.calls).to eq([[:push_value, { "name" => "Jane" }, nil]])
+    end
+  end
 end

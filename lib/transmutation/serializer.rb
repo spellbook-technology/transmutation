@@ -37,6 +37,22 @@ module Transmutation
       end
     end
 
+    # Stream this serializer's JSON into a writer (e.g. Oj::StringWriter) without building the
+    # intermediate hash that {#as_json} returns. The writer only needs to respond to
+    # `push_object`, `push_array`, `push_key`, `push_value`, and `pop`.
+    #
+    # @example
+    #   writer = Oj::StringWriter.new(mode: :rails)
+    #   UserSerializer.new(user).write_json(writer)
+    #   writer.to_s #=> '{"first_name":"John"}'
+    def write_json(writer, options = {})
+      writer.push_object
+      self.class.field_list.each do |field|
+        field.write(self, writer, options) if field.render?(self)
+      end
+      writer.pop
+    end
+
     class << self
       # Define an attribute to be serialized
       #

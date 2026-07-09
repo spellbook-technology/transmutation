@@ -9,5 +9,10 @@ module Transmutation
     def value(serializer, _options)
       block ? serializer.instance_exec(&block) : serializer.object.send(name)
     end
+
+    # Stream the attribute's value under its key, without building an intermediate hash entry.
+    def write(serializer, writer, options)
+      push_value(writer, value(serializer, options), options)
+    end
   end
 end

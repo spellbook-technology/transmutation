@@ -32,5 +32,16 @@ module Transmutation
     def evaluate(condition, serializer)
       condition.is_a?(Symbol) ? serializer.send(condition) : serializer.instance_exec(&condition)
     end
+
+    # Push a value into a JSON stream writer. Types the writer encodes natively are pushed as-is;
+    # anything else goes through #as_json first to preserve ActiveSupport encoding semantics.
+    def push_value(writer, value, options)
+      case value
+      when String, Integer, Float, NilClass, TrueClass, FalseClass, Hash, Array
+        writer.push_value(value, key)
+      else
+        writer.push_value(value.as_json(options), key)
+      end
+    end
   end
 end
